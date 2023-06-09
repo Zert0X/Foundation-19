@@ -1,9 +1,15 @@
 #define DEFAULT_SEED "glowshroom"
 #define VINE_GROWTH_STAGES 5
 
-/proc/spacevine_infestation(var/potency_min=70, var/potency_max=100, var/maturation_min=5, var/maturation_max=15)
+/proc/spacevine_infestation(potency_min=70, potency_max=100, maturation_min=5, maturation_max=15)
 	spawn() //to stop the secrets panel hanging
-		var/turf/T = pick_subarea_turf(/area/hallway , list(/proc/is_station_turf, /proc/not_turf_contains_dense_objects))
+		var/turf/T = pick_subarea_turf(pick(
+		/area/site53/ulcz/hallways,
+		/area/site53/llcz/hallways,
+		/area/site53/uhcz/hallways,
+		/area/site53/lhcz/hallway),
+			list(/proc/is_station_turf, /proc/not_turf_contains_dense_objects)
+		)
 		if(T)
 			var/datum/seed/seed = SSplants.create_random_seed(1)
 			seed.set_trait(TRAIT_SPREAD,2)             // So it will function properly as vines.
@@ -18,9 +24,9 @@
 			//make vine zero start off fully matured
 			new /obj/effect/vine(T,seed, start_matured = 1)
 
-			log_and_message_admins("Spacevines spawned in \the [get_area(T)]", location = T)
+			log_and_message_staff("Spacevines spawned in \the [get_area(T)]", location = T)
 			return
-		log_and_message_admins("<span class='notice'>Event: Spacevines failed to find a viable turf.</span>")
+		log_and_message_staff(SPAN_NOTICE("Event: Spacevines failed to find a viable turf."))
 
 /obj/effect/dead_plant
 	anchored = TRUE
@@ -61,7 +67,7 @@
 /obj/effect/vine/single
 	spread_chance = 0
 
-/obj/effect/vine/New(var/newloc, var/datum/seed/newseed, var/obj/effect/vine/newparent, var/start_matured = 0)
+/obj/effect/vine/New(newloc, datum/seed/newseed, obj/effect/vine/newparent, start_matured = 0)
 	if(!newparent)
 		parent = src
 	else
@@ -77,7 +83,7 @@
 	. = ..()
 
 	if(!SSplants)
-		log_error("<span class='danger'>Plant controller does not exist and [src] requires it. Aborting.</span>")
+		log_error(SPAN_DANGER("Plant controller does not exist and [src] requires it. Aborting."))
 		return INITIALIZE_HINT_QDEL
 	if(!istype(seed))
 		seed = SSplants.seeds[DEFAULT_SEED]
@@ -198,7 +204,7 @@
 	floor = 1
 	return 1
 
-/obj/effect/vine/attackby(var/obj/item/W, var/mob/user)
+/obj/effect/vine/attackby(obj/item/W, mob/user)
 	START_PROCESSING(SSvines, src)
 
 	if(W.edge && W.w_class < ITEM_SIZE_NORMAL && user.a_intent != I_HURT)
@@ -222,7 +228,7 @@
 		adjust_health(-damage)
 		playsound(get_turf(src), W.hitsound, 100, 1)
 
-/obj/effect/vine/AltClick(var/mob/user)
+/obj/effect/vine/AltClick(mob/user)
 	if(!CanPhysicallyInteract(user) || user.incapacitated())
 		return ..()
 	var/obj/item/W = user.get_active_hand()

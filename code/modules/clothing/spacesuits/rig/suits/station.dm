@@ -110,7 +110,7 @@
 
 	allowed = list(/obj/item/device/flashlight,/obj/item/tank,/obj/item/device/suit_cooling_unit,/obj/item/storage/toolbox,/obj/item/storage/briefcase/inflatable,/obj/item/inflatable_dispenser,/obj/item/device/t_scanner,/obj/item/rcd,/obj/item/rpd)
 
-	req_access = list(ACCESS_ENGINE_EQUIP)
+	req_access = list(ACCESS_ENGINEERING_LVL3)
 
 	sprite_sheets = list(
 		SPECIES_UNATHI = 'icons/mob/species/unathi/generated/onmob_rig_back_unathi.dmi'
@@ -403,7 +403,7 @@
 	breach_threshold = 18
 	body_parts_covered = UPPER_TORSO|LOWER_TORSO|LEGS|FEET|ARMS|HANDS
 
-/obj/item/rig/zero/on_update_icon(var/update_mob_icon)
+/obj/item/rig/zero/on_update_icon(update_mob_icon)
 	..()
 	//Append the f for female states
 	if(!ishuman(loc))

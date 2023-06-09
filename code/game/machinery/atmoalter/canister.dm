@@ -460,6 +460,7 @@ update_flag
 		user.do_attack_animation(src)
 		user.setClickCooldown(W.attack_cooldown + W.w_class) // Mirror the logic from base attack cooldowns
 		playsound(user, 'sound/weapons/smash.ogg', 50, TRUE)
+		show_sound_effect(src.loc, user)
 		return
 
 	. = ..()
@@ -470,7 +471,7 @@ update_flag
 	ui_interact(user)
 	return TRUE
 
-/obj/machinery/portable_atmospherics/canister/ui_interact(mob/user, ui_key = "main", var/datum/nanoui/ui = null, var/force_open = 1)
+/obj/machinery/portable_atmospherics/canister/ui_interact(mob/user, ui_key = "main", datum/nanoui/ui = null, force_open = 1)
 	// this is the data which will be sent to the ui
 	var/data[0]
 	data["name"] = name
@@ -493,7 +494,7 @@ update_flag
 		ui.open()
 		ui.set_auto_update(1)
 
-/obj/machinery/portable_atmospherics/canister/OnTopic(var/mob/user, href_list, state)
+/obj/machinery/portable_atmospherics/canister/OnTopic(mob/user, href_list, state)
 	if (href_list["toggle"])
 		if (!valve_open)
 			if (!holding)

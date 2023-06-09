@@ -32,7 +32,7 @@
 		if(WIRE_BOMB_TIMING)
 			if(N.timing)
 				spawn
-					log_and_message_admins("pulsed a nuclear bomb's detonation wire, causing it to explode.")
+					log_and_message_staff("pulsed a nuclear bomb's detonation wire, causing it to explode.")
 					N.explode()
 
 		if(WIRE_BOMB_SAFETY)
@@ -40,10 +40,10 @@
 			spawn(100)
 				N.safety = !N.safety
 				if(N.safety)
-					N.visible_message("<span class='notice'>\The [N] quiets down.</span>")
+					N.visible_message(SPAN_NOTICE("\The [N] quiets down."))
 					N.secure_device()
 				else
-					N.visible_message("<span class='notice'>\The [N] emits a quiet whirling noise!</span>")
+					N.visible_message(SPAN_NOTICE("\The [N] emits a quiet whirling noise!"))
 
 /datum/wires/apc/on_cut(wire, mend)
 	var/obj/machinery/nuclearbomb/N = holder
@@ -52,7 +52,7 @@
 			N.safety = mend
 			if(N.timing)
 				spawn
-					log_and_message_admins("cut a nuclear bomb's timing wire, causing it to explode.")
+					log_and_message_staff("cut a nuclear bomb's timing wire, causing it to explode.")
 					N.explode()
 
 		if(WIRE_BOMB_TIMING)

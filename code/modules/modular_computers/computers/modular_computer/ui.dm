@@ -56,6 +56,8 @@
 	var/datum/computer_file/data/autorun = hard_drive.find_file_by_name("autorun")
 	data["programs"] = list()
 	for(var/datum/computer_file/program/P in hard_drive.stored_files)
+		if(P.program_malicious)
+			continue
 		var/running = FALSE
 		if(P in idle_threads)
 			running = TRUE
@@ -100,7 +102,7 @@
 				return
 
 			P.kill_program(1)
-			to_chat(user, "<span class='notice'>Program [P.filename].[P.filetype] with PID [rand(100,999)] has been killed.</span>")
+			to_chat(user, SPAN_NOTICE("Program [P.filename].[P.filetype] with PID [rand(100,999)] has been killed."))
 			return TRUE
 		if("PC_runprogram")
 			return run_program(params["name"])
@@ -124,7 +126,7 @@
 
 	if(battery_module)
 		switch(battery_module.battery.percent())
-			if(80 to 200) // 100 should be maximal but just in case..
+			if(80 to INFINITY) // 100 should be maximal but just in case..
 				data["PC_batteryicon"] = "batt_100.gif"
 			if(60 to 80)
 				data["PC_batteryicon"] = "batt_80.gif"
@@ -216,7 +218,7 @@
 
 		P.kill_program(1)
 		update_uis()
-		to_chat(user, "<span class='notice'>Program [P.filename].[P.filetype] with PID [rand(100,999)] has been killed.</span>")
+		to_chat(user, SPAN_NOTICE("Program [P.filename].[P.filetype] with PID [rand(100,999)] has been killed."))
 
 	if(href_list["PC_runprogram"] )
 		return run_program(href_list["PC_runprogram"])

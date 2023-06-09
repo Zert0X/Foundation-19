@@ -11,7 +11,7 @@
 	item_state = "voxslug" // For the lack of a better sprite...
 	icon_living = "brainslug"
 	icon_dead = "brainslug_dead"
-	speed = 5
+	movement_cooldown = 3
 	a_intent = I_HURT
 	status_flags = CANPUSH
 	natural_weapon = /obj/item/natural_weapon/bite/weak
@@ -77,7 +77,7 @@
 		client.screen -= hud_elements
 		client.screen -= hud_intent_selector
 
-/mob/living/simple_animal/borer/Initialize(var/mapload, var/gen=1)
+/mob/living/simple_animal/borer/Initialize(mapload, gen=1)
 
 	hud_intent_selector =  new
 	hud_inject_chemicals = new
@@ -249,7 +249,7 @@
 	qdel(host_brain)
 
 #define COLOR_BORER_RED "#ff5555"
-/mob/living/simple_animal/borer/proc/set_ability_cooldown(var/amt)
+/mob/living/simple_animal/borer/proc/set_ability_cooldown(amt)
 	last_special = world.time + amt
 	for(var/obj/thing in hud_elements)
 		thing.color = COLOR_BORER_RED
@@ -288,3 +288,9 @@
 /mob/living/simple_animal/borer/flash_eyes(intensity, override_blindness_check, affect_silicon, visual, type)
 	intensity *= 1.5
 	. = ..()
+
+/mob/living/simple_animal/borer/ImplantRemoval()
+	if(controlling)
+		host.release_control()
+		detatch()
+		leave_host()

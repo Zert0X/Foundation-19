@@ -18,11 +18,11 @@
 	set src in view(1)
 
 	if(usr.incapacitated() || !istype(usr, /mob/living))
-		to_chat(usr, "<span class='warning'>You can't do that.</span>")
+		to_chat(usr, SPAN_WARNING("You can't do that."))
 		return
 
 	if(!Adjacent(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	do_shutdown()
@@ -44,11 +44,11 @@
 	set src in view(1)
 
 	if(usr.incapacitated() || !istype(usr, /mob/living))
-		to_chat(usr, "<span class='warning'>You can't do that.</span>")
+		to_chat(usr, SPAN_WARNING("You can't do that."))
 		return
 
 	if(!Adjacent(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	proc_eject_id(usr)
@@ -60,11 +60,11 @@
 	set src in view(1)
 
 	if(usr.incapacitated() || !istype(usr, /mob/living))
-		to_chat(usr, "<span class='warning'>You can't do that.</span>")
+		to_chat(usr, SPAN_WARNING("You can't do that."))
 		return
 
 	if(!Adjacent(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	proc_eject_usb(usr)
@@ -75,11 +75,11 @@
 	set src in view(1)
 
 	if(usr.incapacitated() || !istype(usr, /mob/living))
-		to_chat(usr, "<span class='warning'>You can't do that.</span>")
+		to_chat(usr, SPAN_WARNING("You can't do that."))
 		return
 
 	if(!Adjacent(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	proc_eject_ai(usr)
@@ -90,15 +90,15 @@
 	set src in view(1)
 
 	if(usr.incapacitated() || !istype(usr, /mob/living))
-		to_chat(usr, "<span class='warning'>You can't do that.</span>")
+		to_chat(usr, SPAN_WARNING("You can't do that."))
 		return
 
 	if(!Adjacent(usr))
-		to_chat(usr, "<span class='warning'>You can't reach it.</span>")
+		to_chat(usr, SPAN_WARNING("You can't reach it."))
 		return
 
 	if(istype(stored_pen))
-		to_chat(usr, "<span class='notice'>You remove [stored_pen] from [src].</span>")
+		to_chat(usr, SPAN_NOTICE("You remove [stored_pen] from [src]."))
 		stored_pen.forceMove(get_turf(src))
 		if(!issilicon(usr))
 			usr.put_in_hands(stored_pen)
@@ -155,7 +155,7 @@
 	ai_slot.update_power_usage()
 	update_uis()
 
-/obj/item/modular_computer/attack_ghost(var/mob/observer/ghost/user)
+/obj/item/modular_computer/attack_ghost(mob/observer/ghost/user)
 	if(enabled)
 		tgui_interact(user)
 	else if(check_rights(R_ADMIN, 0, user))
@@ -163,16 +163,20 @@
 		if(response == "Yes")
 			turn_on(user)
 
-/obj/item/modular_computer/attack_ai(var/mob/user)
-	return attack_self(user)
+/obj/item/modular_computer/attack_ai(mob/user)
+	if(src.get_ntnet_status(NTNET_COMMUNICATION))
+		return attack_self(user)
+	else
+		to_chat(user, SPAN_NOTICE("You send a communication signal, but the computer doesn't respond."))
 
-/obj/item/modular_computer/attack_hand(var/mob/user)
+
+/obj/item/modular_computer/attack_hand(mob/user)
 	if(anchored)
 		return attack_self(user)
 	return ..()
 
 // On-click handling. Turns on the computer if it's off and opens the GUI.
-/obj/item/modular_computer/attack_self(var/mob/user)
+/obj/item/modular_computer/attack_self(mob/user)
 	if(user.IsAdvancedToolUser())
 		if(enabled && screen_on)
 			tgui_interact(user)
@@ -181,7 +185,7 @@
 	else
 		to_chat(user, SPAN_NOTICE("You don't know how to use this thing."))
 
-/obj/item/modular_computer/attackby(var/obj/item/weapon/W as obj, var/mob/user as mob)
+/obj/item/modular_computer/attackby(obj/item/weapon/W as obj, mob/user as mob)
 	if(istype(W, /obj/item/card/id)) // ID Card, try to insert it.
 		var/obj/item/card/id/I = W
 		if(!card_slot)
@@ -202,13 +206,13 @@
 		return
 	if(istype(W, /obj/item/pen) && stores_pen)
 		if(istype(stored_pen))
-			to_chat(user, "<span class='notice'>There is already a pen in [src].</span>")
+			to_chat(user, SPAN_NOTICE("There is already a pen in [src]."))
 			return
 		if(!user.unEquip(W, src))
 			return
 		stored_pen = W
 		update_verbs()
-		to_chat(user, "<span class='notice'>You insert [W] into [src].</span>")
+		to_chat(user, SPAN_NOTICE("You insert [W] into [src]."))
 		return
 	if(istype(W, /obj/item/paper))
 		var/obj/item/paper/paper = W
@@ -290,7 +294,7 @@
 	if(card_slot && card_slot.stored_card)
 		to_chat(user, "The [card_slot.stored_card] is inserted into it.")
 
-/obj/item/modular_computer/MouseDrop(var/atom/over_object)
+/obj/item/modular_computer/MouseDrop(atom/over_object)
 	var/mob/M = usr
 	if(!istype(over_object, /obj/screen) && CanMouseDrop(M))
 		return attack_self(M)

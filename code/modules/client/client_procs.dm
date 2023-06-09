@@ -55,7 +55,7 @@
 	//search the href for script injection
 	if( findtext(href,"<script",1,0) )
 		to_world_log("Attempted use of scripts within a topic call, by [src]")
-		message_admins("Attempted use of scripts within a topic call, by [src]")
+		message_staff("Attempted use of scripts within a topic call, by [src]")
 		//qdel(usr)
 		return
 
@@ -76,7 +76,7 @@
 
 	if(href_list["irc_msg"])
 		if(!holder && received_irc_pm < world.time - 6000) //Worse they can do is spam IRC for 10 minutes
-			to_chat(usr, "<span class='warning'>You are no longer able to use this, it's been more then 10 minutes since an admin on IRC has responded to you</span>")
+			to_chat(usr, SPAN_WARNING("You are no longer able to use this, it's been more then 10 minutes since an admin on IRC has responded to you"))
 			return
 		if(mute_irc)
 			to_chat(usr, "<span class='warning'You cannot use this as your client has been muted from sending messages to the admins on IRC</span>")
@@ -93,7 +93,7 @@
 		ticket.close(client_repository.get_lite_client(usr.client))
 
 	if (GLOB.href_logfile)
-		to_chat(GLOB.href_logfile, "<small>[time2text(world.timeofday,"hh:mm")] [src] (usr:[usr])</small> || [hsrc ? "[hsrc] " : ""][href]<br>")
+		to_file(GLOB.href_logfile, "<small>[time2text(world.timeofday,"hh:mm")] [src] (usr:[usr])</small> || [hsrc ? "[hsrc] " : ""][href]<br>")
 
 	switch(href_list["_src_"])
 		if("holder")
@@ -128,7 +128,7 @@
 	if(!user_acted(src))
 		return 0
 	if(filelength > UPLOAD_LIMIT)
-		to_chat(src, "<font color='red'>Error: AllowUpload(): File Upload too large. Upload Limit: [UPLOAD_LIMIT/1024]KiB.</font>")
+		to_chat(src, FONT_COLORED("red","Error: AllowUpload(): File Upload too large. Upload Limit: [UPLOAD_LIMIT/1024]KiB."))
 		return 0
 	return 1
 
@@ -180,10 +180,10 @@
 
 	if(config.panic_bunker && (get_player_age(ckey) < config.panic_bunker_age && !(ckey in GLOB.admin_datums)))
 		if(GLOB.panicbunker_bypass.Find(ckey))
-			message_admins("[ckey], a new player, was allowed to bypass the Panic Bunker.")
+			message_staff("[ckey], a new player, was allowed to bypass the Panic Bunker.")
 			log_admin("[ckey], a new player, was allowed to bypass the Panic Bunker.")
 		else
-			message_admins("[ckey] cid:[computer_id] ip:[address] tried to join with [get_player_age(ckey)] days, but there is a configured minimum player age of [config.panic_bunker_age] days.")
+			message_staff("[ckey] cid:[computer_id] ip:[address] tried to join with [get_player_age(ckey)] days, but there is a configured minimum player age of [config.panic_bunker_age] days.")
 			log_admin("[ckey] cid:[computer_id] ip:[address] tried to join with [get_player_age(ckey)] days, but there is a configured minimum player age of [config.panic_bunker_age] days.")
 			to_chat("[config.panic_bunker_message]")
 			qdel(src)
@@ -195,9 +195,9 @@
 	else src.preload_rsc = 1 // If config.resource_urls is not set, preload like normal.
 
 	if(byond_version < DM_VERSION)
-		to_chat(src, "<span class='warning'>You are running an older version of BYOND than the server and may experience issues.</span>")
-		to_chat(src, "<span class='warning'>It is recommended that you update to at least [DM_VERSION] at http://www.byond.com/download/.</span>")
-	to_chat(src, "<span class='warning'>If the title screen is black, resources are still downloading. Please be patient until the title screen appears.</span>")
+		to_chat(src, SPAN_WARNING("You are running an older version of BYOND than the server and may experience issues."))
+		to_chat(src, SPAN_WARNING("It is recommended that you update to at least [DM_VERSION] at http://www.byond.com/download/."))
+	to_chat(src, SPAN_WARNING("If the title screen is black, resources are still downloading. Please be patient until the title screen appears."))
 	GLOB.clients += src
 	GLOB.ckey_directory[ckey] = src
 
@@ -223,7 +223,7 @@
 	if (config.event)
 		to_chat(src, "<h1 class='alert'>Event</h1>")
 		to_chat(src, "<h2 class='alert'>An event is taking place. OOC Info:</h2>")
-		to_chat(src, "<span class='alert'>[config.event]</span>")
+		to_chat(src, SPAN_ALERT("[config.event]"))
 		to_chat(src, "<br>")
 
 	if(holder)
@@ -248,13 +248,13 @@
 	connection_timeofday = world.timeofday
 
 	if (SSmisc.changelog_hash && prefs.lastchangelog != SSmisc.changelog_hash) //bolds the changelog button on the interface so we know there are updates.
-		to_chat(src, "<span class='info'>You have unread updates in the changelog.</span>")
+		to_chat(src, SPAN_INFO("You have unread updates in the changelog."))
 		winset(src, "infowindow.changelog", "background-color=#eaeaea;font-style=bold")
 		if(config.aggressive_changelog)
 			src.changelog()
 
 	if(!winexists(src, "asset_cache_browser")) // The client is using a custom skin, tell them.
-		to_chat(src, "<span class='warning'>Unable to access asset cache browser, if you are using a custom skin file, please allow DS to download the updated version, if you are not, then make a bug report. This is not a critical issue but can cause issues with resource downloading, as it is impossible to know when extra resources arrived to you.</span>")
+		to_chat(src, SPAN_WARNING("Unable to access asset cache browser, if you are using a custom skin file, please allow DS to download the updated version, if you are not, then make a bug report. This is not a critical issue but can cause issues with resource downloading, as it is impossible to know when extra resources arrived to you."))
 
 	if(holder)
 		src.control_freak = 0 //Devs need 0 for profiler access
@@ -440,7 +440,7 @@
 		qdel(query_update)
 	else
 		//New player!! Need to insert all the stuff
-		log_and_message_admins("[ckey]([computer_id] [address]) joined for the first time.")
+		log_and_message_staff("[ckey]([computer_id] [address]) joined for the first time.")
 		var/datum/db_query/query_insert = SSdbcore.NewQuery("INSERT INTO erro_player (id, ckey, firstseen, lastseen, ip, computerid, lastadminrank) VALUES (null, '[sql_ckey]', Now(), Now(), '[sql_ip]', '[sql_computerid]', '[sql_admin_rank]')")
 		query_insert.Execute()
 		qdel(query_insert)
@@ -486,7 +486,7 @@
 	set category = "Preferences"
 	prefs?.open_setup_window(usr)
 
-/client/proc/apply_fps(var/client_fps)
+/client/proc/apply_fps(client_fps)
 	if(world.byond_version >= 511 && byond_version >= 511 && client_fps >= CLIENT_MIN_FPS && client_fps <= CLIENT_MAX_FPS)
 		vars["fps"] = client_fps
 

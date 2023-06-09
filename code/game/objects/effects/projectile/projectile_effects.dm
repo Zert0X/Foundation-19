@@ -5,7 +5,7 @@
 	plane = EFFECTS_ABOVE_LIGHTING_PLANE
 	layer = BEAM_PROJECTILE_LAYER //Muzzle flashes would be above the lighting plane anyways.
 	anchored = TRUE
-	unacidable = TRUE
+	acid_resistance = -1
 	light_color = "#00ffff"
 	light_outer_range = 2
 	light_max_bright = 1
@@ -18,7 +18,7 @@
 	alpha = 0
 	invisibility = INVISIBILITY_MAXIMUM
 
-/obj/effect/projectile/invislight/proc/copy_from(var/obj/effect/projectile/owner)
+/obj/effect/projectile/invislight/proc/copy_from(obj/effect/projectile/owner)
 	light_max_bright =    initial(owner.light_max_bright)
 	light_inner_range =   initial(owner.light_inner_range)
 	light_outer_range =   initial(owner.light_outer_range)

@@ -24,16 +24,16 @@
 	set category = null
 
 	if(!src.holder)
-		to_chat(src, "<font color='red'>Only Admins may use this command.</font>")
+		to_chat(src, FONT_COLORED("red","Only Admins may use this command."))
 		return
 
 	var/client/target = input(src,"Choose somebody to grant access to the server's runtime logs (permissions expire at the end of each round):","Grant Permissions",null) as null|anything in GLOB.clients
 	if(!istype(target,/client))
-		to_chat(src, "<font color='red'>Error: giveruntimelog(): Client not found.</font>")
+		to_chat(src, FONT_COLORED("red","Error: giveruntimelog(): Client not found."))
 		return
 
 	target.verbs |= /client/proc/getruntimelog
-	to_chat(target, "<font color='red'>You have been granted access to runtime logs. Please use them responsibly or risk being banned.</font>")
+	to_chat(target, FONT_COLORED("red","You have been granted access to runtime logs. Please use them responsibly or risk being banned."))
 	return
 
 
@@ -51,7 +51,7 @@
 	if(file_spam_check())
 		return
 
-	message_admins("[key_name_admin(src)] accessed file: [path]")
+	message_staff("[key_name_admin(src)] accessed file: [path]")
 	src << browse(file(path), "window=runtimes")
 	to_chat(src, "Attempting to send file, this may take a fair few minutes if the file is very large.")
 	return
@@ -74,7 +74,7 @@
 	if(file_spam_check())
 		return
 
-	message_admins("[key_name_admin(src)] accessed file: [path]")
+	message_staff("[key_name_admin(src)] accessed file: [path]")
 	to_target(src, run(file(path)))
 	to_chat(src, "Attempting to send file, this may take a fair few minutes if the file is very large.")
 	return
@@ -91,11 +91,10 @@
 	if(!check_rights(R_ADMIN|R_MOD, TRUE))
 		return
 
-	var/path = "data/logs/[time2text(world.realtime,"YYYY/MM/DD")].log"
-	if( fexists(path) )
-		to_target(src, run(file(path)))
+	if( diary )
+		to_target(src, run(diary))
 	else
-		to_chat(src, "<font color='red'>Error: view_txt_log(): File not found/Invalid path([path]).</font>")
+		to_chat(src, FONT_COLORED("red","Error: view_txt_log(): diary global is null."))
 		return
 	return
 
@@ -109,7 +108,7 @@
 	if( fexists(path) )
 		src << run(file(path))
 	else
-		to_chat(src, "<font color='red'>Error: view_atk_log(): File not found/Invalid path([path]).</font>")
+		to_chat(src, FONT_COLORED("red","Error: view_atk_log(): File not found/Invalid path([path])."))
 		return
 	usr << run(file(path))
 	return

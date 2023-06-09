@@ -2,8 +2,6 @@
 	. = ..()
 	if(!.)
 		return FALSE
-	if(!living_observers_present(GetConnectedZlevels(z)))
-		return
 	//Health
 	if(stat == DEAD)
 		if(health > 0)
@@ -39,12 +37,12 @@
 		else if(prob(50))
 			escape(src, buckled)
 		else if(prob(50))
-			visible_message("<span class='warning'>\The [src] struggles against \the [buckled]!</span>")
+			visible_message(SPAN_WARNING("\The [src] struggles against \the [buckled]!"))
 
 	return 1
 
 
-/mob/living/simple_animal/proc/handle_atmos(var/atmos_suitable = 1)
+/mob/living/simple_animal/proc/handle_atmos(atmos_suitable = 1)
 	//Atmos
 
 	if(!loc)
@@ -84,7 +82,7 @@
 
 /mob/living/simple_animal/proc/escape(mob/living/M, obj/O)
 	O.unbuckle_mob(M)
-	visible_message("<span class='danger'>\The [M] escapes from \the [O]!</span>")
+	visible_message(SPAN_DANGER("\The [M] escapes from \the [O]!"))
 
 /mob/living/simple_animal/proc/handle_supernatural()
 	if(purge)
@@ -93,10 +91,10 @@
 /mob/living/simple_animal/gib()
 	..(icon_gib,1)
 
-/mob/living/simple_animal/proc/visible_emote(var/act_desc)
+/mob/living/simple_animal/proc/visible_emote(act_desc)
 	custom_emote(1, act_desc)
 
-/mob/living/simple_animal/proc/audible_emote(var/act_desc)
+/mob/living/simple_animal/proc/audible_emote(act_desc)
 	custom_emote(2, act_desc)
 
 /mob/living/simple_animal/proc/handle_special()

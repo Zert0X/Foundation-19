@@ -172,7 +172,7 @@
 	init_finish = REALTIMEOFDAY
 	. = (REALTIMEOFDAY - timeofday)/10
 	var/msg = "Initialized [name] subsystem within [.] second[. == 1 ? "" : "s"]!"
-	to_chat(world, "<span class='boldannounce'>[msg]</span>")
+	to_chat(world, SPAN_CLASS("boldannounce","[msg]"))
 	log_world(msg)
 
 	init_state = SS_INITSTATE_DONE
@@ -277,7 +277,7 @@
 	handled_vars = list("can_fire")
 	predicates = list(/proc/is_num_predicate)
 
-/decl/vv_set_handler/subsystem_handler/handle_set_var(var/datum/controller/subsystem/SS, variable, var_value, client)
+/decl/vv_set_handler/subsystem_handler/handle_set_var(datum/controller/subsystem/SS, variable, var_value, client)
 	if (var_value)
 		SS.enable()
 	else

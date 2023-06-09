@@ -105,6 +105,7 @@ GLOBAL_VAR(href_logfile)
 
 	//TGS
 	TgsNew(new /datum/tgs_event_handler/impl, TGS_SECURITY_TRUSTED)
+	revdata.load_tgs_info()
 	TgsInitializationComplete();
 
 	//Emergency Fix
@@ -231,9 +232,8 @@ GLOBAL_VAR_INIT(world_topic_last, world.timeofday)
 		L["dd_version"] = world.byond_version // DreamDaemon version running on
 		L["dd_build"] = world.byond_build // DreamDaemon build running on
 
-		if(revdata.revision)
-			L["revision"] = revdata.revision
-			L["branch"] = revdata.branch
+		if(revdata)
+			L["revision"] = revdata.commit
 			L["date"] = revdata.date
 		else
 			L["revision"] = "unknown"
@@ -410,8 +410,8 @@ GLOBAL_VAR_INIT(world_topic_last, world.timeofday)
 		if(rank == "Unknown")
 			rank = "Staff"
 
-		var/message =	"<font color='red'>[rank] PM from <b><a href='?irc_msg=[input["sender"]]'>[input["sender"]]</a></b>: [input["msg"]]</font>"
-		var/amessage =  "<font color='blue'>[rank] PM from <a href='?irc_msg=[input["sender"]]'>[input["sender"]]</a> to <b>[key_name(C)]</b> : [input["msg"]]</font>"
+		var/message =	FONT_COLORED("red","[rank] PM from <b><a href='?irc_msg=[input["sender"]]'>[input["sender"]]</a></b>: [input["msg"]]")
+		var/amessage =  FONT_COLORED("blue","[rank] PM from <a href='?irc_msg=[input["sender"]]'>[input["sender"]]</a> to <b>[key_name(C)]</b> : [input["msg"]]")
 
 		C.received_irc_pm = world.time
 		C.irc_admin = input["sender"]
@@ -504,7 +504,7 @@ GLOBAL_VAR_INIT(world_topic_last, world.timeofday)
 			SSticker.master_mode = Lines[1]
 			log_misc("Saved mode is '[SSticker.master_mode]'")
 
-/world/proc/save_mode(var/the_mode)
+/world/proc/save_mode(the_mode)
 	var/F = file("data/mode.txt")
 	fdel(F)
 	to_file(F, the_mode)

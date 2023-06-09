@@ -58,6 +58,9 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 	var/list/total_run_times
 	var/current_runlevel	//for scheduling different subsystems for different stages of the round
 
+	/// Only run ticker subsystems for the next n ticks.
+	var/skip_ticks = 0
+
 	var/static/restart_clear = 0
 	var/static/restart_timeout = 0
 	var/static/restart_count = 0
@@ -159,7 +162,7 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 				msg = "The [BadBoy.name] subsystem seems to be destabilizing the MC and will be offlined."
 				BadBoy.flags |= SS_NO_FIRE
 		if(msg)
-			to_chat(GLOB.admins, "<span class='boldannounce'>[msg]</span>")
+			to_chat(GLOB.admins, SPAN_CLASS("boldannounce","[msg]"))
 			log_world(msg)
 
 	if (istype(Master.subsystems))
@@ -170,7 +173,7 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 		total_run_times = Master.total_run_times
 		StartProcessing(10)
 	else
-		to_chat(world, "<span class='boldannounce'>The Master Controller is having some issues, we will need to re-initialize EVERYTHING</span>")
+		to_chat(world, SPAN_CLASS("boldannounce","The Master Controller is having some issues, we will need to re-initialize EVERYTHING"))
 		Initialize(20, TRUE)
 
 
@@ -249,11 +252,11 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 		return //this was suppose to happen.
 	//loop ended, restart the mc
 	log_game("MC crashed or runtimed, restarting")
-	message_admins("MC crashed or runtimed, restarting")
+	message_staff("MC crashed or runtimed, restarting")
 	var/rtn2 = Recreate_MC()
 	if (rtn2 <= 0)
 		log_game("Failed to recreate MC (Error code: [rtn2]), it's up to the failsafe now")
-		message_admins("Failed to recreate MC (Error code: [rtn2]), it's up to the failsafe now")
+		message_staff("Failed to recreate MC (Error code: [rtn2]), it's up to the failsafe now")
 		Failsafe.defcon = 2
 
 // Main loop.
@@ -347,7 +350,7 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 			new/datum/controller/failsafe() // (re)Start the failsafe.
 
 		//now do the actual stuff
-		if (!queue_head || !(iteration % 3))
+		if (!queue_head || !(iteration % 3) && !skip_ticks)
 			var/checking_runlevel = current_runlevel
 			if(cached_runlevel != checking_runlevel)
 				//resechedule subsystems
@@ -393,6 +396,8 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 
 		iteration++
 		last_run = world.time
+		if(skip_ticks)
+			skip_ticks--
 		src.sleep_delta = MC_AVERAGE_FAST(src.sleep_delta, sleep_delta)
 		current_ticklimit = TICK_LIMIT_RUNNING
 		if (processing * sleep_delta <= world.tick_lag)
@@ -431,6 +436,10 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 		SS.enqueue()
 	. = 1
 
+/// Warns us that the end of tick byond map_update will be laggier then normal, so that we can just skip running subsystems this tick.
+/datum/controller/master/proc/laggy_byond_map_update_incoming()
+	if(!skip_ticks)
+		skip_ticks = 1
 
 // Run thru the queue of subsystems to run, running them while balancing out their allocated tick precentage
 /datum/controller/master/proc/RunQueue()
@@ -491,7 +500,7 @@ GLOBAL_REAL(Master, /datum/controller/master) = new
 
 			current_ticklimit = round(TICK_USAGE + tick_precentage)
 
-			if (!(queue_node_flags & SS_TICKER))
+			if (!(queue_node_flags & SS_TICKER) || skip_ticks)
 				ran_non_ticker = TRUE
 			ran = TRUE
 

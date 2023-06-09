@@ -50,6 +50,7 @@
 #define SPECIALROLE_HUD 8 // AntagHUD image.
 #define STATUS_HUD_OOC 	9 // STATUS_HUD without virus DB check for someone being ill.
 #define LIFE_HUD 		10 // STATUS_HUD that only reports dead or alive
+#define BLINK_HUD       11 // A line representing the blink time remaining on a mob.
 
 // Shuttle moving status.
 #define SHUTTLE_IDLE      0
@@ -76,7 +77,6 @@
 #define EVENT_LEVEL_MUNDANE  1
 #define EVENT_LEVEL_MODERATE 2
 #define EVENT_LEVEL_MAJOR    3
-#define EVENT_LEVEL_EXO      4
 
 //General-purpose life speed define for plants.
 #define HYDRO_SPEED_MULTIPLIER 1
@@ -146,9 +146,14 @@
 #define PROGRAM_TELESCREEN 	(1<<3)
 #define PROGRAM_PDA 		(1<<4)
 
+// Program states
 #define PROGRAM_STATE_KILLED 		0
 #define PROGRAM_STATE_BACKGROUND 	1
 #define PROGRAM_STATE_ACTIVE 		2
+
+// Data block sizes (data is divided by this to get file size)
+#define BLOCK_SIZE_DATA		2000
+#define BLOCK_SIZE_NEWS		5000
 
 // Caps for SCiPnet logging. Less than 10 would make logging useless anyway, more than 500 may make the log browser too laggy. Defaults to 100 unless user changes it.
 #define MAX_NTNET_LOGS 500
@@ -297,8 +302,8 @@
 // Helper procs for easy HTML browser button creation.
 #define UIBUTTON(key, label, title) "[title ? title + ": " : ""]<a href='?src=\ref[src];[key]=1'>[label]</a>"
 
-#define UI_FONT_GOOD(X) "<font color='55cc55'>[X]</font>"
-#define UI_FONT_BAD(X) "<font color='cc5555'>[X]</font>"
+#define UI_FONT_GOOD(X) FONT_COLORED("55cc55","[X]")
+#define UI_FONT_BAD(X) FONT_COLORED("cc5555","[X]")
 
 // Whereas ckey is in the global list or not
 #define IS_TRUSTED_PLAYER(ckey) (ckey in GLOB.trusted_players)
@@ -307,3 +312,9 @@
 //they are here to support hotkeys
 #define INTENT_HOTKEY_LEFT  "left"
 #define INTENT_HOTKEY_RIGHT "right"
+
+//for obj explosion block calculation
+#define EXPLOSION_BLOCK_PROC -1
+
+// Returned by emag_act if object didn't do anything
+#define EMAG_NO_ACT -50

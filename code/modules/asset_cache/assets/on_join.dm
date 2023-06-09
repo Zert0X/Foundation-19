@@ -14,7 +14,8 @@
 		"isd.png" = 'html/images/isd.png',
 		"admin.png" = 'html/images/admin.png',
 		"o5.png" = 'html/images/o5.png',
-		"ecd.png" = 'html/images/ecd.png',
+		"dea.png" = 'html/images/dea.png',
+		"man.png" = 'html/images/man.png',
 		"int.png" = 'html/images/int.png',
 		"mtf.png" = 'html/images/mtf.png',
 		"trib.png" = 'html/images/trib.png',
@@ -26,5 +27,6 @@
 		"sh.png" = 'html/images/sh.png',
 		"ci.png" = 'html/images/ci.png',
 		"cotbg.png" = 'html/images/cotbg.png',
-		"ar.png" = 'html/images/ar.png'
+		"ar.png" = 'html/images/ar.png',
+		"scp3349_ekg.png" = 'html/images/scp3349_ekg.png'
 	)

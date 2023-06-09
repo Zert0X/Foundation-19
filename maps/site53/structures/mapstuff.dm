@@ -5,7 +5,7 @@
 	desc = "Impact resistant server rack. You might be able to pry a disk out."
 	var/obj/item/stock_parts/computer/hard_drive/cluster/drive = new /obj/item/stock_parts/computer/hard_drive/cluster
 
-/obj/structure/backup_server/attackby(obj/item/W, mob/user, var/click_params)
+/obj/structure/backup_server/attackby(obj/item/W, mob/user, click_params)
 	if(isCrowbar(W))
 		if (!drive)
 			to_chat(user, SPAN_WARNING("There is nothing else to take from \the [src]."))
@@ -13,6 +13,7 @@
 
 		to_chat(user, SPAN_NOTICE("You pry out the data drive from \the [src]."))
 		playsound(loc, 'sound/items/Crowbar.ogg', 50, 1)
+		show_sound_effect(loc, user, soundicon = SFX_ICON_SMALL)
 		drive.origin_tech = list(TECH_DATA = rand(4,5), TECH_ENGINEERING = rand(4,5), TECH_PHORON = rand(4,5), TECH_COMBAT = rand(2,5), TECH_ESOTERIC = rand(0,6))
 		var/obj/item/stock_parts/computer/hard_drive/cluster/extracted_drive = drive
 		user.put_in_hands(extracted_drive)
@@ -67,15 +68,15 @@
 				active = 1
 				update_icon()
 				if(prob(70))
-					to_chat(H, "<span class='notice'>As you touch \the [src], you suddenly get a vivid image - [E.get_engravings()]</span>")
+					to_chat(H, SPAN_NOTICE("As you touch \the [src], you suddenly get a vivid image - [E.get_engravings()]"))
 				else
-					to_chat(H, "<span class='warning'>An overwhelming stream of information invades your mind!</span>")
+					to_chat(H, SPAN_WARNING("An overwhelming stream of information invades your mind!"))
 					var/vision = ""
 					for(var/i = 1 to 10)
 						vision += pick(E.actors) + " " + pick("killing","dying","gored","expiring","exploding","mauled","burning","flayed","in agony") + ". "
-					to_chat(H, "<span class='danger'><font size=2>[uppertext(vision)]</font></span>")
+					to_chat(H, SPAN_DANGER("<font size=2>[uppertext(vision)]</font>"))
 					H.Paralyse(2)
 					H.hallucination(20, 100)
 				return
-	to_chat(user, "<span class='notice'>\The [src] is still.</span>")
+	to_chat(user, SPAN_NOTICE("\The [src] is still."))
 	return ..()

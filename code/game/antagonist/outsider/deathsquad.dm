@@ -23,27 +23,27 @@ GLOBAL_DATUM_INIT(deathsquad, /datum/antagonist/deathsquad, new)
 	if(..())
 		deployed = 1
 
-/datum/antagonist/deathsquad/equip(var/mob/living/carbon/human/player)
+/datum/antagonist/deathsquad/equip(mob/living/carbon/human/player)
 	if(!..())
 		return
 
 	if (player.mind == leader)
-		player.equip_to_slot_or_del(new /obj/item/clothing/under/rank/centcom_officer(player), slot_w_uniform)
+		player.equip_to_slot_or_store_or_drop(new /obj/item/clothing/under/rank/centcom_officer(player), slot_w_uniform)
 	else
-		player.equip_to_slot_or_del(new /obj/item/clothing/under/color/green(player), slot_w_uniform)
+		player.equip_to_slot_or_store_or_drop(new /obj/item/clothing/under/color/green(player), slot_w_uniform)
 
-	player.equip_to_slot_or_del(new /obj/item/clothing/shoes/swat(player), slot_shoes)
-	player.equip_to_slot_or_del(new /obj/item/clothing/glasses/thermal(player), slot_glasses)
-	player.equip_to_slot_or_del(new /obj/item/clothing/mask/gas/swat(player), slot_wear_mask)
+	player.equip_to_slot_or_store_or_drop(new /obj/item/clothing/shoes/swat(player), slot_shoes)
+	player.equip_to_slot_or_store_or_drop(new /obj/item/clothing/glasses/thermal(player), slot_glasses)
+	player.equip_to_slot_or_store_or_drop(new /obj/item/clothing/mask/gas/swat(player), slot_wear_mask)
 	if (player.mind == leader)
-		player.equip_to_slot_or_del(new /obj/item/pinpointer(player), slot_l_store)
-		player.equip_to_slot_or_del(new /obj/item/disk/nuclear(player), slot_r_store)
+		player.equip_to_slot_or_store_or_drop(new /obj/item/pinpointer(player), slot_l_store)
+		player.equip_to_slot_or_store_or_drop(new /obj/item/disk/nuclear(player), slot_r_store)
 	else
-		player.equip_to_slot_or_del(new /obj/item/plastique(player), slot_l_store)
-	player.equip_to_slot_or_del(new /obj/item/gun/projectile/revolver(player), slot_belt)
-	player.equip_to_slot_or_del(new /obj/item/gun/energy/pulse_rifle(player), slot_r_hand)
-	player.equip_to_slot_or_del(new /obj/item/rig/ert/assetprotection(player), slot_back)
-	player.equip_to_slot_or_del(new /obj/item/melee/energy/sword(player), slot_l_hand)
+		player.equip_to_slot_or_store_or_drop(new /obj/item/plastique(player), slot_l_store)
+	player.equip_to_slot_or_store_or_drop(new /obj/item/gun/projectile/revolver(player), slot_belt)
+	player.equip_to_slot_or_store_or_drop(new /obj/item/gun/energy/pulse_rifle(player), slot_r_hand)
+	player.equip_to_slot_or_store_or_drop(new /obj/item/rig/ert/assetprotection(player), slot_back)
+	player.equip_to_slot_or_store_or_drop(new /obj/item/melee/energy/sword(player), slot_l_hand)
 	player.implant_loyalty(player)
 
 	var/obj/item/card/id/id = create_id("Asset Protection", player)
@@ -52,7 +52,7 @@ GLOBAL_DATUM_INIT(deathsquad, /datum/antagonist/deathsquad, new)
 		id.icon_state = "centcom"
 	create_radio(DTH_FREQ, player)
 
-/datum/antagonist/deathsquad/update_antag_mob(var/datum/mind/player)
+/datum/antagonist/deathsquad/update_antag_mob(datum/mind/player)
 
 	..()
 

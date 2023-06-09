@@ -2,9 +2,7 @@
 /datum/computer_file/program
 	filetype = "PRG"
 	filename = "UnknownProgram"						// File name. FILE NAME MUST BE UNIQUE IF YOU WANT THE PROGRAM TO BE DOWNLOADABLE FROM SCiPnet!
-	var/required_access = null						// List of required accesses to run/download the program.
-	var/requires_access_to_run = 1					// Whether the program checks for required_access when run.
-	var/requires_access_to_download = 1				// Whether the program checks for required_access when downloading.
+	var/required_access = null						// List of required accesses to download the program.
 	// NanoModule
 	var/datum/nano_module/NM = null					// If the program uses NanoModule, put it here and it will be automagically opened. Otherwise implement ui_interact.
 	var/nanomodule_path = null						// Path to nanomodule, make sure to set this if implementing new program.
@@ -19,6 +17,7 @@
 	var/program_icon_state = null					// Program-specific screen icon state
 	var/program_key_state = "standby_key"			// Program-specific keyboard icon state
 	var/program_menu_icon = "newwin"				// Icon to use for program's link in main menu
+	var/program_malicious = 0						// Program doesn't show up in main menu, cant be in PROGRAM_STATE_ACTIVE, autoran on download, etc. Used by viruses
 	var/requires_ntnet = 0							// Set to 1 for program to require nonstop SCiPnet connection to run. If SCiPnet connection is lost program crashes.
 	var/requires_ntnet_feature = 0					// Optional, if above is set to 1 checks for specific function of SCiPnet (currently NTNET_SOFTWAREDOWNLOAD, NTNET_PEERTOPEER, NTNET_SYSTEMCONTROL and NTNET_COMMUNICATION)
 	var/ntnet_status = 1							// SCiPnet status, updated every tick by computer running this program. Don't use this for checks if SCiPnet works, computers do that. Use this for calculations, etc.
@@ -31,7 +30,7 @@
 	var/ntnet_speed = 0								// GQ/s - current network connectivity transfer rate
 	var/tgui_id
 
-/datum/computer_file/program/New(var/obj/item/modular_computer/comp = null)
+/datum/computer_file/program/New(obj/item/modular_computer/comp = null)
 	..()
 	if(comp && istype(comp))
 		computer = comp
@@ -55,10 +54,11 @@
 	temp.requires_ntnet = requires_ntnet
 	temp.requires_ntnet_feature = requires_ntnet_feature
 	temp.usage_flags = usage_flags
+	temp.program_malicious = program_malicious
 	return temp
 
-// Used by programs that manipulate files.
-/datum/computer_file/program/proc/get_file(var/filename)
+// Used by programs that manipulate data files.
+/datum/computer_file/program/proc/get_data_file(filename)
 	var/obj/item/stock_parts/computer/hard_drive/HDD = computer.hard_drive
 	if(!HDD)
 		return
@@ -67,13 +67,13 @@
 		return
 	return F
 
-/datum/computer_file/program/proc/create_file(var/newname, var/data = "", var/file_type = /datum/computer_file/data)
+/datum/computer_file/program/proc/create_data_file(newname, data = "", file_type = /datum/computer_file/data)
 	if(!newname)
 		return
 	var/obj/item/stock_parts/computer/hard_drive/HDD = computer.hard_drive
 	if(!HDD)
 		return
-	if(get_file(newname))
+	if(get_data_file(newname))
 		return
 	var/datum/computer_file/data/F = new file_type
 	F.filename = newname
@@ -88,19 +88,19 @@
 		computer.update_icon()
 
 // Attempts to create a log in global ntnet datum. Returns 1 on success, 0 on fail.
-/datum/computer_file/program/proc/generate_network_log(var/text)
+/datum/computer_file/program/proc/generate_network_log(text)
 	if(computer)
 		return computer.add_log(text)
 	return 0
 
-/datum/computer_file/program/proc/is_supported_by_hardware(var/hardware_flag = 0, var/loud = 0, var/mob/user = null)
+/datum/computer_file/program/proc/is_supported_by_hardware(hardware_flag = 0, loud = 0, mob/user = null)
 	if(!(hardware_flag & usage_flags))
 		if(loud && computer && user)
-			to_chat(user, "<span class='warning'>\The [computer] flashes: \"Hardware Error - Incompatible software\".</span>")
+			to_chat(user, SPAN_WARNING("\The [computer] flashes: \"Hardware Error - Incompatible software\"."))
 		return 0
 	return 1
 
-/datum/computer_file/program/proc/get_signal(var/specific_action = 0)
+/datum/computer_file/program/proc/get_signal(specific_action = 0)
 	if(computer)
 		return computer.get_ntnet_status(specific_action)
 	return 0
@@ -120,10 +120,10 @@
 		if(3)
 			ntnet_speed = NTNETSPEED_ETHERNET
 
-// Check if the user can run program. Only humans can operate computer. Automatically called in run_program()
+// Check if the user can download program. Only humans can download files.
 // User has to wear their ID or have it inhand for ID Scan to work.
 // Can also be called manually, with optional parameter being access_to_check to scan the user's ID
-/datum/computer_file/program/proc/can_run(var/mob/living/user, var/loud = 0, var/access_to_check)
+/datum/computer_file/program/proc/has_access(mob/living/user, loud = 0, access_to_check)
 	// Defaults to required_access
 	if(!access_to_check)
 		access_to_check = required_access
@@ -140,13 +140,13 @@
 	var/obj/item/card/id/I = user.GetIdCard()
 	if(!I)
 		if(loud)
-			to_chat(user, "<span class='notice'>\The [computer] flashes an \"RFID Error - Unable to scan ID\" warning.</span>")
+			to_chat(user, SPAN_NOTICE("\The [computer] flashes an \"RFID Error - Unable to scan ID\" warning."))
 		return 0
 
 	if(access_to_check in I.access)
 		return 1
 	else if(loud)
-		to_chat(user, "<span class='notice'>\The [computer] flashes an \"Access Denied\" warning.</span>")
+		to_chat(user, SPAN_NOTICE("\The [computer] flashes an \"Access Denied\" warning."))
 
 // This attempts to retrieve header data for NanoUIs. If implementing completely new device of different type than existing ones
 // always include the device here in this proc. This proc basically relays the request to whatever is running the program.
@@ -157,8 +157,11 @@
 
 // This is performed on program startup. May be overriden to add extra logic. Remember to include ..() call. Return 1 on success, 0 on failure.
 // When implementing new program based device, use this to run the program.
-/datum/computer_file/program/proc/run_program(var/mob/living/user)
-	if(can_run(user, 1) || !requires_access_to_run)
+/datum/computer_file/program/proc/run_program(mob/living/user)
+	if(program_malicious)
+		computer.idle_threads.Add(src)
+		program_state = PROGRAM_STATE_BACKGROUND
+	else
 		computer.active_program = src
 		if(nanomodule_path)
 			NM = new nanomodule_path(src, new /datum/topic_manager/program(src), src)
@@ -168,16 +171,16 @@
 			TM = new tguimodule_path(src)
 			if(user)
 				TM.using_access = user.GetAccess()
-		if(requires_ntnet && network_destination)
-			generate_network_log("Connection opened to [network_destination].")
 		program_state = PROGRAM_STATE_ACTIVE
-		return 1
-	return 0
+
+	if(requires_ntnet && network_destination)
+		generate_network_log("Connection opened to [network_destination].")
+	return 1
 
 // Use this proc to kill the program. Designed to be implemented by each program if it requires on-quit logic, such as the SCPRC client.
-/datum/computer_file/program/proc/kill_program(var/forced = 0)
+/datum/computer_file/program/proc/kill_program(forced = 0)
 	program_state = PROGRAM_STATE_KILLED
-	if(network_destination)
+	if(requires_ntnet && network_destination)
 		generate_network_log("Connection to [network_destination] closed.")
 	QDEL_NULL(NM)
 	if(TM)
@@ -250,7 +253,7 @@
 					computer.tgui_interact(user) // Re-open the UI on this computer. It should show the main screen now.
 
 // Relays the call to nano module, if we have one
-/datum/computer_file/program/proc/check_eye(var/mob/user)
+/datum/computer_file/program/proc/check_eye(mob/user)
 	if(NM)
 		return NM.check_eye(user)
 	if(TM)
@@ -268,14 +271,14 @@
 	available_to_ai = FALSE
 	var/datum/computer_file/program/program = null	// Program-Based computer program that runs this nano module. Defaults to null.
 
-/datum/nano_module/program/New(var/host, var/topic_manager, var/program)
+/datum/nano_module/program/New(host, topic_manager, program)
 	..()
 	src.program = program
 
 /datum/topic_manager/program
 	var/datum/program
 
-/datum/topic_manager/program/New(var/datum/program)
+/datum/topic_manager/program/New(datum/program)
 	..()
 	src.program = program
 

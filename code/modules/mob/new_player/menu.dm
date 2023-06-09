@@ -11,23 +11,23 @@
 	var/obj/screen/using
 
 	using = new /obj/screen/new_player/title(src)
-	using.hud = src
+	using.hud_ref = weakref(src)
 	adding += using
 
 	using = new /obj/screen/new_player/selection/join_game(src)
-	using.hud = src
+	using.hud_ref = weakref(src)
 	adding += using
 
 	using = new /obj/screen/new_player/selection/settings(src)
-	using.hud = src
+	using.hud_ref = weakref(src)
 	adding += using
 
 	using = new /obj/screen/new_player/selection/manifest(src)
-	using.hud = src
+	using.hud_ref = weakref(src)
 	adding += using
 
 	using = new /obj/screen/new_player/selection/observe(src)
-	using.hud = src
+	using.hud_ref = weakref(src)
 	adding += using
 
 	mymob.client.screen = list()
@@ -57,6 +57,7 @@
 	return ..()
 
 /obj/screen/new_player/title/proc/cycle_lobby_screen(list/lobby_screens)
+	var/datum/hud/hud = hud_ref.resolve()
 	if(!istype(hud) || !isnewplayer(hud.mymob))
 		return
 	lobby_index += 1
@@ -72,7 +73,7 @@
 
 /obj/screen/new_player/selection/New(datum/hud/H)
 	color = null
-	hud = H
+	hud_ref = weakref(H)
 	return ..()
 
 /obj/screen/new_player/selection/MouseEntered(location, control, params)
@@ -94,6 +95,9 @@
 	update_lobby_icon()
 
 /obj/screen/new_player/selection/join_game/Click()
+	var/datum/hud/hud = hud_ref.resolve()
+	if(!istype(hud))
+		return
 	var/mob/new_player/player = hud.mymob
 	sound_to(player, 'sound/effects/menu_click.ogg')
 
@@ -105,7 +109,7 @@
 
 	if(GAME_STATE <= RUNLEVEL_LOBBY)
 		player.ready = !player.ready
-		to_chat(player, "<span class='notice'>You are now [player.ready ? "ready" : "not ready"].</span>")
+		to_chat(player, SPAN_NOTICE("You are now [player.ready ? "ready" : "not ready"]."))
 
 	else
 		player.LateChoices() //show the latejoin job selection menu
@@ -115,6 +119,9 @@
 /obj/screen/new_player/selection/join_game/proc/update_lobby_icon()
 	SIGNAL_HANDLER
 
+	var/datum/hud/hud = hud_ref.resolve()
+	if(!istype(hud))
+		return
 	var/mob/new_player/player = hud.mymob
 
 	if(GAME_STATE <= RUNLEVEL_LOBBY)
@@ -131,6 +138,9 @@
 	screen_loc = "NORTH-1,CENTER-7"
 
 /obj/screen/new_player/selection/settings/Click()
+	var/datum/hud/hud = hud_ref.resolve()
+	if(!istype(hud))
+		return
 	var/mob/new_player/player = hud.mymob
 	sound_to(player, 'sound/effects/menu_click.ogg')
 	player.setupcharacter()
@@ -145,6 +155,9 @@
 	screen_loc = "NORTH-2,CENTER-7"
 
 /obj/screen/new_player/selection/manifest/Click()
+	var/datum/hud/hud = hud_ref.resolve()
+	if(!istype(hud))
+		return
 	var/mob/new_player/player = hud.mymob
 	sound_to(player, 'sound/effects/menu_click.ogg')
 	if(GAME_STATE != (RUNLEVEL_GAME || RUNLEVEL_POSTGAME))
@@ -158,13 +171,16 @@
 	screen_loc = "NORTH-3,CENTER-7"
 
 /obj/screen/new_player/selection/observe/Click()
+	var/datum/hud/hud = hud_ref.resolve()
+	if(!istype(hud))
+		return
 	var/mob/new_player/player = hud.mymob
 	sound_to(player, 'sound/effects/menu_click.ogg')
 	player.new_player_observe()
 
 /mob/new_player/proc/new_player_observe()
 	if(GAME_STATE < RUNLEVEL_LOBBY)
-		to_chat(src, "<span class='warning'>Please wait for server initialization to complete...</span>")
+		to_chat(src, SPAN_WARNING("Please wait for server initialization to complete..."))
 		return
 
 	if(!config.respawn_delay || tgui_alert(client,
@@ -188,10 +204,10 @@
 		observer.started_as_observer = TRUE
 		var/obj/O = locate("landmark*Observer-Start")
 		if(istype(O))
-			to_chat(src, "<span class='notice'>Now teleporting.</span>")
+			to_chat(src, SPAN_NOTICE("Now teleporting."))
 			observer.forceMove(O.loc)
 		else
-			to_chat(src, "<span class='danger'>Could not locate an observer spawn point. Use the Teleport verb to jump to the map.</span>")
+			to_chat(src, SPAN_DANGER("Could not locate an observer spawn point. Use the Teleport verb to jump to the map."))
 		observer.timeofdeath = world.time // Set the time of death so that the respawn timer works correctly.
 
 		var/should_announce = client.get_preference_value(/datum/client_preference/announce_ghost_join) == GLOB.PREF_YES

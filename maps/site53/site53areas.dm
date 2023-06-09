@@ -280,12 +280,6 @@
 	area_flags = AREA_FLAG_RAD_SHIELDED
 	sound_env = LARGE_ENCLOSED
 
-/area/site53/lowertrams/restaurant
-	name = "\improper Restaurant"
-	icon_state = "cafeteria"
-	area_flags = AREA_FLAG_RAD_SHIELDED
-	sound_env = MEDIUM_SOFTFLOOR
-
 /area/site53/lowertrams/restaurantkitchenarea
 	name = "\improper Restaurant Kitchen Area"
 	icon_state = "cafeteria"
@@ -347,8 +341,26 @@
 	area_flags = AREA_FLAG_RAD_SHIELDED
 	sound_env = SMALL_ENCLOSED
 
+/area/site53/ulcz/scp2427_3
+	name = "\improper SCP-2427-3"
+	icon_state = "research"
+	area_flags = AREA_FLAG_RAD_SHIELDED
+	sound_env = SMALL_ENCLOSED
+
+/area/site53/ulcz/humanoidcontainment
+	name = "\improper Humanoid Containment"
+	icon_state = "research"
+	area_flags = AREA_FLAG_RAD_SHIELDED
+	sound_env = SMALL_ENCLOSED
+
 /area/site53/ulcz/scp999
 	name = "\improper SCP-999"
+	icon_state = "research"
+	area_flags = AREA_FLAG_RAD_SHIELDED
+	sound_env = SMALL_ENCLOSED
+
+/area/site53/ulcz/scp216
+	name = "\improper SCP-216"
 	icon_state = "research"
 	area_flags = AREA_FLAG_RAD_SHIELDED
 	sound_env = SMALL_ENCLOSED
@@ -361,6 +373,12 @@
 
 /area/site53/llcz/scp113
 	name = "\improper SCP-113"
+	icon_state = "research"
+	area_flags = AREA_FLAG_RAD_SHIELDED
+	sound_env = SMALL_ENCLOSED
+
+/area/site53/llcz/scp2398
+	name = "\improper SCP-2398"
 	icon_state = "research"
 	area_flags = AREA_FLAG_RAD_SHIELDED
 	sound_env = SMALL_ENCLOSED
@@ -512,14 +530,26 @@
 	area_flags = AREA_FLAG_RAD_SHIELDED
 	turf_initializer = /decl/turf_initializer/maintenance
 
-/area/site53/uez/o5repoffice
-	name = "\improper O5 Representative's Office"
+/area/site53/uez/repoffice/internaltribunal
+	name = "\improper Internal Tribunal Departments Office"
+	sound_env = MEDIUM_SOFTFLOOR
+	area_flags = AREA_FLAG_RAD_SHIELDED
+	icon_state = "head_quarters"
+
+/area/site53/uez/repoffice/ethics
+	name = "\improper Ethics Representative's Office"
 	sound_env = MEDIUM_SOFTFLOOR
 	area_flags = AREA_FLAG_RAD_SHIELDED
 	icon_state = "head_quarters"
 
 /area/site53/uez/goirepoffice
 	name = "\improper GoI Representative's Office"
+	sound_env = MEDIUM_SOFTFLOOR
+	area_flags = AREA_FLAG_RAD_SHIELDED
+	icon_state = "head_quarters"
+
+/area/site53/uez/commandpanicbunker
+	name = "\improper Admin Panic Bunker"
 	sound_env = MEDIUM_SOFTFLOOR
 	area_flags = AREA_FLAG_RAD_SHIELDED
 	icon_state = "head_quarters"
@@ -608,7 +638,17 @@
 	icon_state = "checkpoint1"
 
 /area/site53/llcz/dclass/prep
-	name = "\improper Primary D-Class Checkpoint Preperation"
+	name = "\improper Primary D-Class Checkpoint Preparation"
+	area_flags = AREA_FLAG_RAD_SHIELDED
+	icon_state = "checkpoint1"
+
+/area/site53/llcz/dclass/med_checkpoint
+	name = "\improper Medical D-Class Checkpoint"
+	area_flags = AREA_FLAG_RAD_SHIELDED
+	icon_state = "checkpoint"
+
+/area/site53/llcz/dclass/med_checkpointoverlook
+	name = "\improper Medical D-Class Checkpoint Overlook"
 	area_flags = AREA_FLAG_RAD_SHIELDED
 	icon_state = "checkpoint1"
 
@@ -800,6 +840,11 @@
 	sound_env = SMALL_ENCLOSED
 	turf_initializer = /decl/turf_initializer/maintenance
 
+/area/site53/uhcz/scp457containment
+	name = "\improper SCP-457 Containment Chamber"
+	icon_state = "research"
+	area_flags = AREA_FLAG_RAD_SHIELDED
+
 /area/site53/uhcz/scp106observ
 	name = "\improper SCP-106 Observation"
 	icon_state = "research"
@@ -906,11 +951,6 @@
 
 /area/site53/entrancezone/forensics
 	name = "\improper Forensics Laboratory"
-	icon_state = "detective"
-	area_flags = AREA_FLAG_RAD_SHIELDED
-
-/area/site53/entrancezone/forensicsstairwell
-	name = "\improper Forensics Laboratory Stairwell"
 	icon_state = "detective"
 	area_flags = AREA_FLAG_RAD_SHIELDED
 

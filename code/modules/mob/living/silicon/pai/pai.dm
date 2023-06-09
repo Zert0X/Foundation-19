@@ -114,7 +114,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 		var/timeleft = round((silence_time - world.timeofday)/10 ,1)
 		. += "Communications system reboot in -[(timeleft / 60) % 60]:[add_zero(num2text(timeleft % 60), 2)]"
 
-/mob/living/silicon/pai/check_eye(var/mob/user as mob)
+/mob/living/silicon/pai/check_eye(mob/user as mob)
 	if (!current)
 		return -1
 	return 0
@@ -137,7 +137,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 	if(prob(20))
 		var/turf/T = get_turf_or_move(loc)
 		for (var/mob/M in viewers(T))
-			M.show_message("<span class='warning'>A shower of sparks spray from [src]'s inner workings.</span>", 3, "<span class='warning'>You hear and smell the ozone hiss of electrical sparks being expelled violently.</span>", 2)
+			M.show_message(SPAN_WARNING("A shower of sparks spray from [src]'s inner workings."), 3, SPAN_WARNING("You hear and smell the ozone hiss of electrical sparks being expelled violently."), 2)
 		return death(0)
 
 	switch(pick(1,2,3))
@@ -188,7 +188,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 				if(card in affecting.implants)
 					affecting.take_external_damage(rand(30,50))
 					affecting.implants -= card
-					H.visible_message("<span class='danger'>\The [src] explodes out of \the [H]'s [affecting.name] in a shower of gore!</span>")
+					H.visible_message(SPAN_DANGER("\The [src] explodes out of \the [H]'s [affecting.name] in a shower of gore!"))
 					break
 		holder.drop_from_inventory(card)
 
@@ -260,7 +260,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 	if(card && user.a_intent == I_HELP)
 		var/list/new_access = card.GetAccess()
 		idcard.access = new_access
-		visible_message("<span class='notice'>[user] slides [W] across [src].</span>")
+		visible_message(SPAN_NOTICE("[user] slides [W] across [src]."))
 		to_chat(src, SPAN_NOTICE("Your access has been updated!"))
 		return FALSE // don't continue processing click callstack.
 	if(W.force)
@@ -283,7 +283,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 	return 0
 
 // Handle being picked up.
-/mob/living/silicon/pai/get_scooped(var/mob/living/carbon/grabber, var/self_drop)
+/mob/living/silicon/pai/get_scooped(mob/living/carbon/grabber, self_drop)
 	. = ..()
 	if(.)
 		var/obj/item/holder/H = .
@@ -317,7 +317,7 @@ GLOBAL_LIST_INIT(possible_say_verbs, list(
 		to_chat(src, SPAN_NOTICE("You disable your integrated light."))
 		light_on = FALSE
 
-/mob/living/silicon/pai/start_pulling(var/atom/movable/AM)
+/mob/living/silicon/pai/start_pulling(atom/movable/AM)
 	. = ..()
 	if (pulling)
 		pullin.screen_loc = ui_pull_resist

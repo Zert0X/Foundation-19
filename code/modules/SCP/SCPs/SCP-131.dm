@@ -41,7 +41,7 @@ GLOBAL_LIST_EMPTY(scp131s)
 	see_invisible = SEE_INVISIBLE_NOLIGHTING
 	see_in_dark = 7
 
-/mob/living/simple_animal/scp_131/say(var/message, var/datum/language/speaking = null, whispering)
+/mob/living/simple_animal/scp_131/say(message, datum/language/speaking = null, whispering)
 	src << "<span class = 'notice'>You cannot speak.</span>"
 	return 0
 
@@ -100,7 +100,7 @@ GLOBAL_LIST_EMPTY(scp131s)
 							"stares reverently up at [friend].",
 							"seems to look where [friend] is looking."))
 	else
-		to_chat(usr, "<span class='notice'>[src] ignores you.</span>")
+		to_chat(usr, SPAN_NOTICE("[src] ignores you."))
 	return
 
 /mob/living/simple_animal/scp_131/proc/handle_movement_target()
@@ -177,7 +177,7 @@ GLOBAL_LIST_EMPTY(scp131s)
 		flee_target = A
 		turns_since_scan = 5
 
-/mob/living/simple_animal/scp_131/attackby(var/obj/item/O, var/mob/user)
+/mob/living/simple_animal/scp_131/attackby(obj/item/O, mob/user)
 	. = ..()
 	if(O.force)
 		set_flee_target(user? user : src.loc)
@@ -191,7 +191,7 @@ GLOBAL_LIST_EMPTY(scp131s)
 	. = ..()
 	set_flee_target(src.loc)
 
-/mob/living/simple_animal/scp_131/bullet_act(var/obj/item/projectile/proj)
+/mob/living/simple_animal/scp_131/bullet_act(obj/item/projectile/proj)
 	. = ..()
 	set_flee_target(proj.firer? proj.firer : src.loc)
 

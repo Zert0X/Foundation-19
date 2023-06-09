@@ -11,6 +11,7 @@ GLOBAL_LIST_EMPTY(scp343s)
 	icon = 'icons/SCP/scp-343.dmi'
 	icon_state = null
 	status_flags = NO_ANTAG
+	var/mob/living/carbon/human/target = null
 
 
 /datum/scp/scp_343
@@ -19,11 +20,32 @@ GLOBAL_LIST_EMPTY(scp343s)
 	classification = SAFE
 
 /mob/living/carbon/human/scp343/IsAdvancedToolUser()
-	return FALSE
+	return TRUE
 
 /mob/living/carbon/human/scp343/New(new_loc, new_species)
 	new_species = "SCP-343"
 	return ..()
+
+/mob/living/carbon/human/scp343/Login()
+	. = ..()
+	if(client)
+		add_language(LANGUAGE_ENGLISH)
+		add_language(LANGUAGE_HUMAN_FRENCH)
+		add_language(LANGUAGE_HUMAN_GERMAN)
+		add_language(LANGUAGE_HUMAN_SPANISH)
+		if(!(MUTATION_XRAY in mutations))
+			mutations.Add(MUTATION_XRAY)
+			update_mutations()
+			update_sight()
+	if(target)
+		target = null
+
+/mob/living/carbon/human/scp343/Logout()
+	. = ..()
+	if(mind)
+		mind = null
+	if(target)
+		target = null
 
 /mob/living/carbon/human/scp343/Initialize()
 	update_icons()
@@ -70,11 +92,11 @@ GLOBAL_LIST_EMPTY(scp343s)
 		return ..(M)
 	var/mob/living/carbon/human/scp343/H = M
 	if (H.a_intent == I_HELP)
-		to_chat(H, "<span class='warning'>You start to heal [src] wounds</span>")
-		visible_message("<span class='notice'>\The [H] starts to heal [src] wounds</span>")
+		to_chat(H, SPAN_WARNING("You start to heal [src] wounds"))
+		visible_message(SPAN_NOTICE("\The [H] starts to heal [src] wounds"))
 		if( do_after(H, 120) )
 			src.revive()
-			visible_message("<span class='notice'>\The [H] fully healed [src]!</span>")
+			visible_message(SPAN_NOTICE("\The [H] fully healed [src]!"))
 		return
 	switch (stat)
 		if (CONSCIOUS, UNCONSCIOUS)

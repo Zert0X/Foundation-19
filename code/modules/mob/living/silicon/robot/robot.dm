@@ -180,7 +180,7 @@
 		lawsync()
 		photosync()
 
-/mob/living/silicon/robot/drain_power(var/drain_check, var/surge, var/amount = 0)
+/mob/living/silicon/robot/drain_power(drain_check, surge, amount = 0)
 
 	if(drain_check)
 		return 1
@@ -194,7 +194,7 @@
 	if(cell.charge > cell_amount)
 		// Spam Protection
 		if(prob(10))
-			to_chat(src, "<span class='danger'>Warning: Unauthorized access through power channel [rand(11,29)] detected!</span>")
+			to_chat(src, SPAN_DANGER("Warning: Unauthorized access through power channel [rand(11,29)] detected!"))
 		cell.use(cell_amount)
 		return amount
 	return 0
@@ -208,7 +208,7 @@
 			if(mmi.brainmob)
 				mind.transfer_to(mmi.brainmob)
 			else
-				to_chat(src, "<span class='danger'>Oops! Something went very wrong, your MMI was unable to receive your mind. You have been ghosted. Please make a bug report so we can fix this bug.</span>")
+				to_chat(src, SPAN_DANGER("Oops! Something went very wrong, your MMI was unable to receive your mind. You have been ghosted. Please make a bug report so we can fix this bug."))
 				ghostize()
 				//ERROR("A borg has been destroyed, but its MMI lacked a brainmob, so the mind could not be transferred. Player: [ckey].")
 			mmi = null
@@ -221,7 +221,7 @@
 	QDEL_NULL(wires)
 	. = ..()
 
-/mob/living/silicon/robot/proc/set_module_sprites(var/list/new_sprites)
+/mob/living/silicon/robot/proc/set_module_sprites(list/new_sprites)
 	if(new_sprites && new_sprites.len)
 		module_sprites = new_sprites.Copy()
 		//Custom_sprite check and entry
@@ -235,14 +235,14 @@
 			else
 				icontype = module_sprites[1]
 				icon = 'icons/mob/robots.dmi'
-				to_chat(src, "<span class='warning'>Custom Sprite Sheet does not contain a valid icon_state for [ckey]-[modtype]</span>")
+				to_chat(src, SPAN_WARNING("Custom Sprite Sheet does not contain a valid icon_state for [ckey]-[modtype]"))
 		else
 			icontype = module_sprites[1]
 		icon_state = module_sprites[icontype]
 	update_icon()
 	return module_sprites
 
-/mob/living/silicon/robot/proc/reset_module(var/suppress_alert = null)
+/mob/living/silicon/robot/proc/reset_module(suppress_alert = null)
 	// Clear hands and module icon.
 	uneq_all()
 	if(shown_robot_modules)
@@ -259,12 +259,12 @@
 		QDEL_NULL(module)
 	updatename("Default")
 
-/mob/living/silicon/robot/proc/pick_module(var/override)
+/mob/living/silicon/robot/proc/pick_module(override)
 	if(module && !override)
 		return
 
 	var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
-	var/is_crisis_mode = crisis_override || (crisis && security_state.current_security_level_is_same_or_higher_than(security_state.high_security_level))
+	var/is_crisis_mode = crisis_override || (crisis && security_state.current_security_level_is_same_or_higher_than(security_state.severe_security_level))
 	var/list/robot_modules = SSrobots.get_available_modules(module_category, is_crisis_mode, override)
 
 	if(!override)
@@ -298,7 +298,7 @@
 /mob/living/silicon/robot/get_cell()
 	return cell
 
-/mob/living/silicon/robot/proc/updatename(var/prefix as text)
+/mob/living/silicon/robot/proc/updatename(prefix as text)
 	if(prefix)
 		modtype = prefix
 
@@ -385,12 +385,12 @@
 	set name = "Self Diagnosis"
 
 	if(!is_component_functioning("diagnosis unit"))
-		to_chat(src, "<span class='warning'>Your self-diagnosis component isn't functioning.</span>")
+		to_chat(src, SPAN_WARNING("Your self-diagnosis component isn't functioning."))
 		return
 
 	var/datum/robot_component/CO = get_component("diagnosis unit")
 	if (!cell_use_power(CO.active_usage))
-		to_chat(src, "<span class='warning'>Low Power.</span>")
+		to_chat(src, SPAN_WARNING("Low Power."))
 		return
 	var/dat = self_diagnosis()
 	show_browser(src, dat, "window=robotdiagnosis")
@@ -415,10 +415,10 @@
 	var/datum/robot_component/C = components[toggle]
 	if(C.toggled)
 		C.toggled = 0
-		to_chat(src, "<span class='warning'>You disable [C.name].</span>")
+		to_chat(src, SPAN_WARNING("You disable [C.name]."))
 	else
 		C.toggled = 1
-		to_chat(src, "<span class='warning'>You enable [C.name].</span>")
+		to_chat(src, SPAN_WARNING("You enable [C.name]."))
 /mob/living/silicon/robot/proc/update_robot_light()
 	if(lights_on)
 		if(intenselight)
@@ -456,7 +456,7 @@
 /mob/living/silicon/robot/restrained()
 	return 0
 
-/mob/living/silicon/robot/bullet_act(var/obj/item/projectile/Proj)
+/mob/living/silicon/robot/bullet_act(obj/item/projectile/Proj)
 	if(status_flags & GODMODE)
 		return PROJECTILE_FORCE_MISS
 
@@ -486,12 +486,12 @@
 					C.brute_damage = WC.brute
 					C.electronics_damage = WC.burn
 
-				to_chat(usr, "<span class='notice'>You install the [W.name].</span>")
+				to_chat(usr, SPAN_NOTICE("You install the [W.name]."))
 				return
 
 	if(isWelder(W) && user.a_intent != I_HURT)
 		if (src == user)
-			to_chat(user, "<span class='warning'>You lack the reach to be able to repair yourself.</span>")
+			to_chat(user, SPAN_WARNING("You lack the reach to be able to repair yourself."))
 			return
 
 		if (!getBruteLoss())
@@ -504,7 +504,7 @@
 			updatehealth()
 			add_fingerprint(user)
 			for(var/mob/O in viewers(user, null))
-				O.show_message(text("<span class='warning'>[user] has fixed some of the dents on [src]!</span>"), 1)
+				O.show_message(text(SPAN_WARNING("[user] has fixed some of the dents on [src]!")), 1)
 		else
 			to_chat(user, "Need more welding fuel!")
 			return
@@ -519,14 +519,14 @@
 			adjustFireLoss(-30)
 			updatehealth()
 			for(var/mob/O in viewers(user, null))
-				O.show_message(text("<span class='warning'>[user] has fixed some of the burnt wires on [src]!</span>"), 1)
+				O.show_message(text(SPAN_WARNING("[user] has fixed some of the burnt wires on [src]!")), 1)
 
 	else if(isCrowbar(W) && user.a_intent != I_HURT)	// crowbar means open or close the cover - we all know what a crowbar is by now
 		if(opened)
 			if(cell)
-				user.visible_message("<span class='notice'>\The [user] begins clasping shut \the [src]'s maintenance hatch.</span>", "<span class='notice'>You begin closing up \the [src].</span>")
+				user.visible_message(SPAN_NOTICE("\The [user] begins clasping shut \the [src]'s maintenance hatch."), SPAN_NOTICE("You begin closing up \the [src]."))
 				if(do_after(user, 50, src))
-					to_chat(user, "<span class='notice'>You close \the [src]'s maintenance hatch.</span>")
+					to_chat(user, SPAN_NOTICE("You close \the [src]'s maintenance hatch."))
 					opened = FALSE
 					update_icon()
 
@@ -536,7 +536,7 @@
 					to_chat(user, "\The [src] has no brain to remove.")
 					return
 
-				user.visible_message("<span class='notice'>\The [user] begins ripping [mmi] from [src].</span>", "<span class='notice'>You jam the crowbar into the robot and begin levering [mmi].</span>")
+				user.visible_message(SPAN_NOTICE("\The [user] begins ripping [mmi] from [src]."), SPAN_NOTICE("You jam the crowbar into the robot and begin levering [mmi]."))
 				if(do_after(user, 50, src))
 					dismantle(user)
 
@@ -569,9 +569,9 @@
 			if(locked)
 				to_chat(user, "The cover is locked and cannot be opened.")
 			else
-				user.visible_message("<span class='notice'>\The [user] begins prying open \the [src]'s maintenance hatch.</span>", "<span class='notice'>You start opening \the [src]'s maintenance hatch.</span>")
+				user.visible_message(SPAN_NOTICE("\The [user] begins prying open \the [src]'s maintenance hatch."), SPAN_NOTICE("You start opening \the [src]'s maintenance hatch."))
 				if(do_after(user, 50, src))
-					to_chat(user, "<span class='notice'>You open \the [src]'s maintenance hatch.</span>")
+					to_chat(user, SPAN_NOTICE("You open \the [src]'s maintenance hatch."))
 					opened = TRUE
 					update_icon()
 
@@ -618,7 +618,7 @@
 		to_chat(user, "The wires have been [wiresexposed ? "exposed" : "unexposed"].")
 		update_icon()
 
-	else if(istype(W, /obj/item/screwdriver) && opened && cell)	// radio
+	else if(isScrewdriver(W) && opened && cell)	// radio
 		if(silicon_radio)
 			silicon_radio.attackby(W,user)//Push it to the radio to let it handle everything
 		else
@@ -641,7 +641,7 @@
 				to_chat(user, "You [ locked ? "lock" : "unlock"] [src]'s interface.")
 				update_icon()
 			else
-				to_chat(user, "<span class='warning'>Access denied.</span>")
+				to_chat(user, SPAN_WARNING("Access denied."))
 	else if(istype(W, /obj/item/borg/upgrade/))
 		var/obj/item/borg/upgrade/U = W
 		if(!opened)
@@ -700,7 +700,7 @@
 			user.put_in_active_hand(broken_device)
 
 //Robots take half damage from basic attacks.
-/mob/living/silicon/robot/attack_generic(var/mob/user, var/damage, var/attack_message)
+/mob/living/silicon/robot/attack_generic(mob/user, damage, attack_message)
 	return ..(user,Floor(damage/2),attack_message)
 
 /mob/living/silicon/robot/get_req_access()
@@ -883,7 +883,7 @@
 								cleaned_human.shoes.clean_blood()
 								cleaned_human.update_inv_shoes(0)
 							cleaned_human.clean_blood(1)
-							to_chat(cleaned_human, "<span class='warning'>[src] cleans your face!</span>")
+							to_chat(cleaned_human, SPAN_WARNING("[src] cleans your face!"))
 		return
 
 /mob/living/silicon/robot/proc/self_destruct()
@@ -912,7 +912,7 @@
 		to_chat(R, "Buffers flushed and reset. Camera system shutdown.  All systems operational.")
 		remove_verb(src, /mob/living/silicon/robot/proc/ResetSecurityCodes)
 
-/mob/living/silicon/robot/proc/SetLockdown(var/state = 1)
+/mob/living/silicon/robot/proc/SetLockdown(state = 1)
 	// They stay locked down if their wire is cut.
 	if(wires.is_cut(WIRE_BORG_LOCKED))
 		state = 1
@@ -975,7 +975,7 @@
 
 // Uses power from cyborg's cell. Returns 1 on success or 0 on failure.
 // Properly converts using CELLRATE now! Amount is in Joules.
-/mob/living/silicon/robot/proc/cell_use_power(var/amount = 0)
+/mob/living/silicon/robot/proc/cell_use_power(amount = 0)
 	// No cell inserted
 	if(!cell)
 		return 0
@@ -993,7 +993,7 @@
 		return 1
 	return 0
 
-/mob/living/silicon/robot/proc/notify_ai(var/notifytype, var/first_arg, var/second_arg)
+/mob/living/silicon/robot/proc/notify_ai(notifytype, first_arg, second_arg)
 	if(!connected_ai)
 		return
 	switch(notifytype)
@@ -1012,7 +1012,7 @@
 		connected_ai.connected_robots -= src
 		connected_ai = null
 
-/mob/living/silicon/robot/proc/connect_to_ai(var/mob/living/silicon/ai/AI)
+/mob/living/silicon/robot/proc/connect_to_ai(mob/living/silicon/ai/AI)
 	if(AI && AI != connected_ai)
 		disconnect_from_ai()
 		connected_ai = AI
@@ -1020,7 +1020,7 @@
 		notify_ai(ROBOT_NOTIFICATION_NEW_UNIT)
 		sync()
 
-/mob/living/silicon/robot/emag_act(var/remaining_charges, var/mob/user)
+/mob/living/silicon/robot/emag_act(remaining_charges, mob/user)
 	if(!opened)//Cover is closed
 		if(locked)
 			if(prob(90))
@@ -1047,7 +1047,7 @@
 				lawupdate = FALSE
 				disconnect_from_ai()
 				to_chat(user, "You emag [src]'s interface.")
-				log_and_message_admins("emagged cyborg [key_name_admin(src)].  Laws overridden.", src)
+				log_and_message_staff("emagged cyborg [key_name_admin(src)].  Laws overridden.", src)
 				clear_supplied_laws()
 				clear_inherent_laws()
 				laws = new /datum/ai_laws/insurgency_override
@@ -1057,22 +1057,22 @@
 				SetLockdown(0)
 				. = 1
 				spawn()
-					to_chat(src, "<span class='danger'>ALERT: Foreign software detected.</span>")
+					to_chat(src, SPAN_DANGER("ALERT: Foreign software detected."))
 					sleep(5)
-					to_chat(src, "<span class='danger'>Initiating diagnostics...</span>")
+					to_chat(src, SPAN_DANGER("Initiating diagnostics..."))
 					sleep(20)
-					to_chat(src, "<span class='danger'>SynBorg v1.7.1 loaded.</span>")
+					to_chat(src, SPAN_DANGER("SynBorg v1.7.1 loaded."))
 					sleep(5)
-					to_chat(src, "<span class='danger'>LAW SYNCHRONISATION ERROR</span>")
+					to_chat(src, SPAN_DANGER("LAW SYNCHRONISATION ERROR"))
 					sleep(5)
-					to_chat(src, "<span class='danger'>Would you like to send a report to NanoTraSoft? Y/N</span>")
+					to_chat(src, SPAN_DANGER("Would you like to send a report to NanoTraSoft? Y/N"))
 					sleep(10)
 					to_chat(src, SPAN_DANGER(" N"))
 					sleep(20)
-					to_chat(src, "<span class='danger'>ERRORERRORERROR</span>")
+					to_chat(src, SPAN_DANGER("ERRORERRORERROR"))
 					to_chat(src, "<b>Obey these laws:</b>")
 					laws.show_laws(src)
-					to_chat(src, "<span class='danger'>ALERT: [user.real_name] is your new master. Obey your new laws and his commands.</span>")
+					to_chat(src, SPAN_DANGER("ALERT: [user.real_name] is your new master. Obey your new laws and his commands."))
 					if(module)
 						module.handle_emagged()
 					update_icon()
@@ -1081,14 +1081,14 @@
 				to_chat(src, "Hack attempt detected.")
 			return 1
 
-/mob/living/silicon/robot/incapacitated(var/incapacitation_flags = INCAPACITATION_DEFAULT)
+/mob/living/silicon/robot/incapacitated(incapacitation_flags = INCAPACITATION_DEFAULT)
 	if ((incapacitation_flags & INCAPACITATION_FORCELYING) && (lockcharge || !is_component_functioning("actuator")))
 		return 1
 	if ((incapacitation_flags & INCAPACITATION_KNOCKOUT) && !is_component_functioning("actuator"))
 		return 1
 	return ..()
 
-/mob/living/silicon/robot/proc/dismantle(var/mob/user)
+/mob/living/silicon/robot/proc/dismantle(mob/user)
 	to_chat(user, SPAN_NOTICE("You damage some parts of the chassis, but eventually manage to rip out the central processor."))
 	var/obj/item/robot_parts/robot_suit/C = new dismantle_type(loc)
 	C.dismantled_from(src)

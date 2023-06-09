@@ -58,12 +58,12 @@
 /obj/effect/overmap/visitable/sector/exoplanet/proc/get_random_species_name()
 	return pick("nol","shan","can","fel","xor")+pick("a","e","o","t","ar")+pick("ian","oid","ac","ese","inian","rd")
 
-/obj/effect/overmap/visitable/sector/exoplanet/proc/rename_species(var/species_type, var/newname, var/force = FALSE)
+/obj/effect/overmap/visitable/sector/exoplanet/proc/rename_species(species_type, newname, force = FALSE)
 	if (species[species_type] && !force)
 		return FALSE
 
 	species[species_type] = newname
-	log_and_message_admins("renamed [species_type] to [newname]")
+	log_and_message_staff("renamed [species_type] to [newname]")
 	for (var/mob/living/simple_animal/A in animals)
 		if (istype(A,species_type))
 			A.SetName(newname)

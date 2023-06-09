@@ -145,12 +145,6 @@ var/const/NEGATIVE_INFINITY = -1#INF // win: -1.#INF, lin: -inf
 
 #define CanPhysicallyInteractWith(user, target) (target.CanUseTopicPhysical(user) == STATUS_INTERACTIVE)
 
-#define QDEL_NULL_LIST(x) if(x) { for(var/y in x) { qdel(y) }}; if(x) {x.Cut(); x = null; } // Second x check to handle items that LAZYREMOVE on qdel.
-
-#define QDEL_NULL(x) if(x) { qdel(x) ; x = null }
-
-#define QDEL_IN(item, time) addtimer(CALLBACK(GLOBAL_PROC, .proc/qdel, item), time, TIMER_STOPPABLE)
-
 #define DROP_NULL(x) if(x) { x.dropInto(loc); x = null; }
 
 #define DROP_NULL_LIST(x) if(x) { for(var/atom/movable/y in x) { y.dropInto(loc) }}; x.Cut(); x = null;
@@ -217,7 +211,7 @@ var/const/NEGATIVE_INFINITY = -1#INF // win: -1.#INF, lin: -inf
 
 #define crash_with(X) crash_at(X, __FILE__, __LINE__)
 
-#define isscp106(A) istype(A, /mob/living/carbon/human/scp106)
+#define isscp106(A) istype(A, /mob/living/carbon/human/scp_106)
 
 #define isscp049(A) istype(A, /mob/living/carbon/human/scp049)
 
@@ -248,3 +242,5 @@ var/const/NEGATIVE_INFINITY = -1#INF // win: -1.#INF, lin: -inf
 #define issignaller(O) istype(O, /obj/item/device/assembly/signaller)
 
 #define istimer(O) istype(O, /obj/item/device/assembly/timer)
+
+#define isscp2343(A) istype(A, /mob/living/carbon/human/scp2343)

@@ -34,13 +34,15 @@
 
 /datum/gear/augment/integrated_health_hud
 	display_name = "integrated health HUD (head)"
-	cost = 8
+	cost = 4
 	path = /obj/item/organ/internal/augment/active/hud/health
+	allowed_roles = list(/datum/job/cmo, /datum/job/chemist, /datum/job/surgeon, /datum/job/emt, /datum/job/psychiatrist, /datum/job/medicaldoctor)
 
 /datum/gear/augment/integrated_security_hud
 	display_name = "integrated security HUD (head)"
-	cost = 8
+	cost = 4
 	path = /obj/item/organ/internal/augment/active/hud/security
+	allowed_branches = list(/datum/mil_branch/security)
 
 /datum/gear/augment/integrated_janitor_hud
 	display_name = "integrated filth HUD (head)"

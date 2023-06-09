@@ -255,7 +255,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 						if(CHANNEL.is_admin_channel)
 							dat+="<B><FONT style='BACKGROUND-COLOR: LightGreen '><A href='?src=\ref[src];show_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A></FONT></B><BR>"
 						else
-							dat+="<B><A href='?src=\ref[src];show_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : null ]<BR></B>"
+							dat+="<B><A href='?src=\ref[src];show_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? (FONT_COLORED("red","***")) : null ]<BR></B>"
 				dat+="<BR><HR><A href='?src=\ref[src];refresh=1'>Refresh</A>"
 				dat+="<BR><A href='?src=\ref[src];setScreen=[0]'>Back</A>"
 			if(2)
@@ -360,7 +360,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 					dat+="<I>No feed channels found active...</I><BR>"
 				else
 					for(var/datum/feed_channel/CHANNEL in connected_group.network_channels)
-						dat+="<A href='?src=\ref[src];pick_censor_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : null ]<BR>"
+						dat+="<A href='?src=\ref[src];pick_censor_channel=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? (FONT_COLORED("red","***")) : null ]<BR>"
 				dat+="<BR><A href='?src=\ref[src];setScreen=[0]'>Cancel</A>"
 			if(11)
 				dat+="<B>[GLOB.using_map.company_name] D-Notice Handler</B><HR>"
@@ -371,7 +371,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 					dat+="<I>No feed channels found active...</I><BR>"
 				else
 					for(var/datum/feed_channel/CHANNEL in connected_group.network_channels)
-						dat+="<A href='?src=\ref[src];pick_d_notice=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? ("<FONT COLOR='red'>***</FONT>") : null ]<BR>"
+						dat+="<A href='?src=\ref[src];pick_d_notice=\ref[CHANNEL]'>[CHANNEL.channel_name]</A> [(CHANNEL.censored) ? (FONT_COLORED("red","***")) : null ]<BR>"
 
 				dat+="<BR><A href='?src=\ref[src];setScreen=[0]'>Back</A>"
 			if(12)
@@ -735,12 +735,15 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 		else if (stat & BROKEN)
 			visible_message(SPAN_WARNING("\The [user] further abuses the shattered [name]."))
 			playsound(src, 'sound/effects/hit_on_shattered_glass.ogg', 100, 1)
+			show_sound_effect(src.loc, soundicon = SFX_ICON_JAGGED)
 		else if (++hitstaken < 3)
 			visible_message(SPAN_DANGER("\The [user] slams \the [src] with \an [I], cracking it!"))
 			playsound(src, 'sound/effects/Glassbr3.ogg', 100, 1)
+			show_sound_effect(src.loc, soundicon = SFX_ICON_JAGGED)
 		else
 			visible_message(SPAN_DANGER("\The [user] smashes \the [src] with \an [I]!"))
 			playsound(src, 'sound/effects/Glasshit.ogg', 100, 1)
+			show_sound_effect(src.loc, soundicon = SFX_ICON_JAGGED)
 			set_broken(TRUE)
 			update_icon()
 		return TRUE
@@ -751,7 +754,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 	var/is_synth = 0
 	var/obj/item/photo/photo = null
 
-/datum/news_photo/New(var/obj/item/photo/p, var/synth)
+/datum/news_photo/New(obj/item/photo/p, synth)
 	is_synth = synth
 	photo = p
 
@@ -890,7 +893,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 				if(curr_page == 0) //We're at the start, get to the middle
 					src.screen=1
 			src.curr_page++
-			playsound(src.loc, "pageturn", 50, 1)
+			playsound(src.loc, SFX_PAGETURN, 50, 1)
 
 		else if(href_list["prev_page"])
 			if(curr_page == 0)
@@ -902,7 +905,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 				if(curr_page == src.pages+1) //we're at the end, let's go back to the middle.
 					src.screen = 1
 			src.curr_page--
-			playsound(src.loc, "pageturn", 50, 1)
+			playsound(src.loc, SFX_PAGETURN, 50, 1)
 
 		if (istype(src.loc, /mob))
 			src.attack_self(src.loc)
@@ -911,7 +914,7 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 /obj/item/newspaper/attackby(obj/item/W as obj, mob/user as mob)
 	if(istype(W, /obj/item/pen))
 		if(src.scribble_page == src.curr_page)
-			to_chat(user, "<FONT COLOR='blue'>There's already a scribble in this page... You wouldn't want to make things too cluttered, would you?</FONT>")
+			to_chat(user, FONT_COLORED("blue","There's already a scribble in this page... You wouldn't want to make things too cluttered, would you?"))
 		else
 			var/s = sanitize(input(user, "Write something", "Newspaper", ""))
 			s = sanitize(s)
@@ -956,11 +959,11 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 ///obj/machinery/newscaster/process()       //Was thinking of doing the icon update through process, but multiple iterations per second does not
 //	return                                  //bode well with a newscaster network of 10+ machines. Let's just return it, as it's added in the machines list.
 
-/obj/machinery/newscaster/proc/newsAlert(var/news_call)   //This isn't Agouri's work, for it is ugly and vile.
+/obj/machinery/newscaster/proc/newsAlert(news_call)   //This isn't Agouri's work, for it is ugly and vile.
 	var/turf/T = get_turf(src)                      //Who the fuck uses spawn(600) anyway, jesus christ
 	if(news_call)
 		for(var/mob/O in hearers(world.view-1, T))
-			O.show_message("<span class='newscaster'><EM>[src.name]</EM> beeps, \"[news_call]\"</span>",2)
+			O.show_message(SPAN_CLASS("newscaster","<EM>[src.name]</EM> beeps, \"[news_call]\""),2)
 		src.alert = 1
 		src.update_icon()
 		spawn(300)
@@ -969,6 +972,6 @@ var/list/obj/machinery/newscaster/allCasters = list() //Global list that will co
 		playsound(src.loc, 'sound/machines/twobeep.ogg', 75, 1)
 	else
 		for(var/mob/O in hearers(world.view-1, T))
-			O.show_message("<span class='newscaster'><EM>[src.name]</EM> beeps, \"Attention! Wanted issue distributed!\"</span>",2)
+			O.show_message(SPAN_CLASS("newscaster","<EM>[src.name]</EM> beeps, \"Attention! Wanted issue distributed!\""),2)
 		playsound(src.loc, 'sound/machines/warning-buzzer.ogg', 75, 1)
 	return

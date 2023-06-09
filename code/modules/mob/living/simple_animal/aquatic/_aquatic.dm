@@ -1,7 +1,7 @@
 /mob/living/simple_animal/aquatic
 	icon = 'icons/mob/simple_animal/aquatic.dmi'
 	turns_per_move = 5
-	speed = 4
+	movement_cooldown = 4
 	mob_size = MOB_SMALL
 
 	// They only really care if there's water around them or not.
@@ -33,7 +33,7 @@
 		Paralyse(3)
 	. = ..()
 
-/mob/living/simple_animal/aquatic/handle_atmos(var/atmos_suitable = 1)
+/mob/living/simple_animal/aquatic/handle_atmos(atmos_suitable = 1)
 	. = ..(atmos_suitable = submerged())
 
 /datum/say_list/aquatic

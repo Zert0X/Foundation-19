@@ -5,7 +5,7 @@
 	item_state = "p90"
 	w_class = ITEM_SIZE_HUGE
 	force = 10
-	caliber = "10mm"
+	caliber = "5.7x28mm"
 	slot_flags = SLOT_BELT|SLOT_BACK
 	origin_tech = list(TECH_COMBAT = 6, TECH_MATERIAL = 1, TECH_ESOTERIC = 5)
 	load_method = MAGAZINE
@@ -15,8 +15,8 @@
 	//Assault rifle, burst fire degrades quicker than SMG, worse one-handing penalty, slightly increased move delay
 	firemodes = list(
 		list(mode_name="semiauto",       burst=1, fire_delay=0,    move_delay=null, one_hand_penalty=2, burst_accuracy=null, dispersion=null),
-		list(mode_name="3-round bursts", burst=3, fire_delay=null, move_delay=4,    one_hand_penalty=3, burst_accuracy=list(0,-1,-1),       dispersion=list(0.0, 0.5, 0.7)),
-		list(mode_name="short bursts",   burst=5, fire_delay=null, move_delay=4,    one_hand_penalty=4, burst_accuracy=list(0,-1,-1,-1,-2), dispersion=list(0.5, 0.5, 0.7, 0.9, 1.0)),
+		list(mode_name="3-round bursts", burst=3, fire_delay=null, move_delay=4,    one_hand_penalty=3, burst_accuracy=list(0,-1,-1), dispersion=list(0.0, 0.5, 0.8)),
+		list(mode_name="full auto",      burst=1, fire_delay=0, burst_delay=1, one_hand_penalty=4, burst_accuracy=list(0,-1,-2), dispersion=list(0.1, 0.7, 1.1), autofire_enabled=1),
 		)
 
 /obj/item/gun/projectile/automatic/scp/p90/update_icon()
@@ -35,7 +35,7 @@
 	toggle_scope(usr, 1.0)
 */
 /obj/item/gun/projectile/automatic/scp/p90
-	magazine_type = /obj/item/ammo_magazine/scp/p90_mag/rubber
+	magazine_type = /obj/item/ammo_magazine/scp/p90_mag
 
 /obj/item/gun/projectile/automatic/scp/m16
 	name = "M16"
@@ -45,7 +45,7 @@
 	w_class = ITEM_SIZE_HUGE
 	force = 10
 	slot_flags = SLOT_BACK
-	caliber = "a556"
+	caliber = "5.56x45mm"
 	origin_tech = list(TECH_COMBAT = 6, TECH_MATERIAL = 1, TECH_ESOTERIC = 5)
 	load_method = MAGAZINE
 	magazine_type = /obj/item/ammo_magazine/scp/m16_mag
@@ -73,7 +73,7 @@
 	w_class = ITEM_SIZE_HUGE
 	force = 10
 	slot_flags = SLOT_BACK
-	caliber = "a762"
+	caliber = "7.62x39mm"
 	origin_tech = list(TECH_COMBAT = 6, TECH_MATERIAL = 1, TECH_ESOTERIC = 5)
 	load_method = MAGAZINE
 	magazine_type = /obj/item/ammo_magazine/scp/ak
@@ -108,7 +108,7 @@
 	w_class = ITEM_SIZE_HUGE
 	force = 10
 	slot_flags = SLOT_BACK
-	caliber = "a762"
+	caliber = "7.62x39mm"
 	origin_tech = list(TECH_COMBAT = 6, TECH_MATERIAL = 1, TECH_ESOTERIC = 5)
 	load_method = MAGAZINE
 	magazine_type = /obj/item/ammo_magazine/scp/ak
@@ -138,7 +138,7 @@
 	caliber = ".45"
 	origin_tech = list(TECH_COMBAT = 5, TECH_MATERIAL = 2, TECH_ESOTERIC = 3)
 	slot_flags = SLOT_BELT
-	ammo_type = /obj/item/ammo_casing/c45
+	ammo_type = /obj/item/ammo_casing/pistol/c45
 	magazine_type = /obj/item/ammo_magazine/scp/ierichon
 	allowed_magazines = /obj/item/ammo_magazine/scp/ierichon //more damage compared to the wt550, smaller mag size
 
@@ -162,7 +162,7 @@
 	w_class = ITEM_SIZE_HUGE
 	force = 10
 	slot_flags = SLOT_BACK
-	caliber = "a762"
+	caliber = "7.62x39mm"
 	origin_tech = list(TECH_COMBAT = 6, TECH_MATERIAL = 1, TECH_ESOTERIC = 5)
 	load_method = MAGAZINE
 	magazine_type = /obj/item/ammo_magazine/scp/ak
@@ -189,7 +189,7 @@
 	w_class = ITEM_SIZE_HUGE
 	force = 10
 	slot_flags = SLOT_BACK
-	caliber = "a762"
+	caliber = "7.62x54mmR"
 	origin_tech = list(TECH_COMBAT = 6, TECH_MATERIAL = 1, TECH_ESOTERIC = 5)
 	load_method = MAGAZINE
 	magazine_type = /obj/item/ammo_magazine/scp/svd

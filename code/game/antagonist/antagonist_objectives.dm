@@ -1,11 +1,11 @@
-/datum/antagonist/proc/create_global_objectives(var/override=0)
+/datum/antagonist/proc/create_global_objectives(override=0)
 	if(config.objectives_disabled != CONFIG_OBJECTIVE_ALL && !override)
 		return 0
 	if(global_objectives && global_objectives.len)
 		return 0
 	return 1
 
-/datum/antagonist/proc/create_objectives(var/datum/mind/player, var/override=0)
+/datum/antagonist/proc/create_objectives(datum/mind/player, override=0)
 	if(config.objectives_disabled != CONFIG_OBJECTIVE_ALL && !override)
 		return 0
 	if(create_global_objectives(override) || global_objectives.len)
@@ -54,16 +54,16 @@
 		if(!goal)
 			goal = new /datum/goal/ambition(mind)
 		goal.description = new_goal
-		to_chat(src, "<span class='notice'>You've set your goal to be <b>'[goal.description]'</b>. You can check your goals with the <b>Show Goals</b> verb.</span>")
+		to_chat(src, SPAN_NOTICE("You've set your goal to be <b>'[goal.description]'</b>. You can check your goals with the <b>Show Goals</b> verb."))
 	else
-		to_chat(src, "<span class='notice'>You leave your ambitions behind.</span>")
+		to_chat(src, SPAN_NOTICE("You leave your ambitions behind."))
 		if(goal)
 			qdel(goal)
-	log_and_message_admins("has set their ambitions to now be: [new_goal].")
+	log_and_message_staff("has set their ambitions to now be: [new_goal].")
 
 //some antagonist datums are not actually antagonists, so we might want to avoid
 //sending them the antagonist meet'n'greet messages.
 //E.G. ERT
-/datum/antagonist/proc/show_objectives_at_creation(var/datum/mind/player)
+/datum/antagonist/proc/show_objectives_at_creation(datum/mind/player)
 	if(src.show_objectives_on_creation)
 		show_objectives(player)

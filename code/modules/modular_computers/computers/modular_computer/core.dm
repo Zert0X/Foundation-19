@@ -46,7 +46,7 @@
 /obj/item/modular_computer/proc/install_default_programs()
 	return 1
 
-/obj/item/modular_computer/proc/install_default_programs_by_job(var/mob/living/carbon/human/H)
+/obj/item/modular_computer/proc/install_default_programs_by_job(mob/living/carbon/human/H)
 	var/datum/job/jb = SSjobs.get_by_title(H.job)
 	if(!jb)
 		return
@@ -82,10 +82,10 @@
 		qdel(CH)
 	return ..()
 
-/obj/item/modular_computer/emag_act(var/remaining_charges, var/mob/user)
+/obj/item/modular_computer/emag_act(remaining_charges, mob/user)
 	if(computer_emagged)
 		to_chat(user, "\The [src] was already emagged.")
-		return NO_EMAG_ACT
+		return EMAG_NO_ACT
 	else
 		computer_emagged = TRUE
 		to_chat(user, "You emag \the [src]. It's screen briefly shows a \"OVERRIDE ACCEPTED: New software downloads available.\" message.")
@@ -94,24 +94,24 @@
 /obj/item/modular_computer/update_icon()
 	icon_state = icon_state_unpowered
 
-	overlays.Cut()
+	cut_overlays()
 	if(bsod)
-		overlays.Add("bsod")
+		add_overlay("bsod")
 		return
 	if(!enabled)
 		if(icon_state_screensaver)
-			overlays.Add(icon_state_screensaver)
+			add_overlay(icon_state_screensaver)
 		set_light(0.2, 0.1, 0)
 		return
 	set_light(0.2, 0.1, light_strength)
 	if(active_program)
-		overlays.Add(active_program.program_icon_state ? active_program.program_icon_state : icon_state_menu)
+		add_overlay(active_program.program_icon_state ? active_program.program_icon_state : icon_state_menu)
 		if(active_program.program_key_state)
-			overlays.Add(active_program.program_key_state)
+			add_overlay(active_program.program_key_state)
 	else
-		overlays.Add(icon_state_menu)
+		add_overlay(icon_state_menu)
 
-/obj/item/modular_computer/proc/turn_on(var/mob/user)
+/obj/item/modular_computer/proc/turn_on(mob/user)
 	if(bsod)
 		return
 	if(tesla_link)
@@ -137,7 +137,7 @@
 			to_chat(user, "You press the power button but \the [src] does not respond")
 
 // Relays kill program request to currently active program. Use this to quit current program.
-/obj/item/modular_computer/proc/kill_program(var/forced = 0)
+/obj/item/modular_computer/proc/kill_program(forced = 0)
 	if(active_program)
 		active_program.kill_program(forced)
 		active_program = null
@@ -148,18 +148,18 @@
 	update_icon()
 
 // Returns 0 for No Signal, 1 for Low Signal and 2 for Good Signal. 3 is for wired connection (always-on)
-/obj/item/modular_computer/proc/get_ntnet_status(var/specific_action = 0)
+/obj/item/modular_computer/proc/get_ntnet_status(specific_action = 0)
 	if(network_card)
 		return network_card.get_signal(specific_action)
 	else
 		return 0
 
-/obj/item/modular_computer/proc/add_log(var/text)
+/obj/item/modular_computer/proc/add_log(text)
 	if(!get_ntnet_status())
 		return 0
 	return ntnet_global.add_log(text, network_card)
 
-/obj/item/modular_computer/proc/shutdown_computer(var/loud = 1)
+/obj/item/modular_computer/proc/shutdown_computer(loud = 1)
 	kill_program(1)
 	for(var/datum/computer_file/program/P in idle_threads)
 		P.kill_program(1)
@@ -169,7 +169,7 @@
 	enabled = 0
 	update_icon()
 
-/obj/item/modular_computer/proc/enable_computer(var/mob/user = null)
+/obj/item/modular_computer/proc/enable_computer(mob/user = null)
 	enabled = 1
 	update_icon()
 
@@ -202,13 +202,13 @@
 		P = hard_drive.find_file_by_name(prog)
 
 	if(!P || !istype(P)) // Program not found or it's not executable program.
-		to_chat(user, "<span class='danger'>\The [src]'s screen shows \"I/O ERROR - Unable to run [prog]\" warning.</span>")
+		to_chat(user, SPAN_DANGER("\The [src]'s screen shows \"I/O ERROR - Unable to run [prog]\" warning."))
 		return
 
 	P.computer = src
 	if(!P.is_supported_by_hardware(hardware_flag, 1, user))
 		return
-	if(P in idle_threads)
+	if((P in idle_threads) && !(P.program_malicious))
 		P.program_state = PROGRAM_STATE_ACTIVE
 		active_program = P
 		idle_threads.Remove(P)
@@ -216,11 +216,11 @@
 		return
 
 	if(idle_threads.len >= processor_unit.processing_power+1)
-		to_chat(user, "<span class='notice'>\The [src] displays a \"Maximal CPU load reached. Unable to run another program.\" error</span>")
+		to_chat(user, SPAN_NOTICE("\The [src] displays a \"Maximal CPU load reached. Unable to run another program.\" error"))
 		return
 
 	if(P.requires_ntnet && !get_ntnet_status(P.requires_ntnet_feature)) // The program requires SCiPnet connection, but we are not connected to SCiPnet.
-		to_chat(user, "<span class='danger'>\The [src]'s screen shows \"NETWORK ERROR - Unable to connect to SolNet. Please retry. If problem persists contact your system administrator.\" warning.</span>")
+		to_chat(user, SPAN_DANGER("\The [src]'s screen shows \"NETWORK ERROR - Unable to connect to SCiPnet. Please retry. If problem persists contact your system administrator.\" warning."))
 		return
 
 	if(active_program)
@@ -273,7 +273,7 @@
 		update_uis()
 
 // Used by camera monitor program
-/obj/item/modular_computer/check_eye(var/mob/user)
+/obj/item/modular_computer/check_eye(mob/user)
 	if(active_program)
 		return active_program.check_eye(user)
 	else

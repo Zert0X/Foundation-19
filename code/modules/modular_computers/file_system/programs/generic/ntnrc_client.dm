@@ -93,7 +93,7 @@
 					channel.remove_client(src) // We shouldn't be in channel's user list, but just in case...
 				return TRUE
 			var/mob/living/user = usr
-			if(can_run(user, TRUE, ACCESS_NETWORK))
+			if(has_access(user, TRUE, ACCESS_NETWORK))
 				for(var/datum/ntnet_conversation/chan as anything in ntnet_global.chat_channels)
 					chan.remove_client(src)
 				netadmin_mode = TRUE
@@ -126,9 +126,9 @@
 					// This program shouldn't even be runnable without computer.
 					CRASH("Var computer is null!")
 				if(!computer.hard_drive)
-					computer.visible_message("<span class='warning'>\The [computer] shows an \"I/O Error - Hard drive connection error\" warning.</span>")
+					computer.visible_message(SPAN_WARNING("\The [computer] shows an \"I/O Error - Hard drive connection error\" warning."))
 				else	// In 99.9% cases this will mean our HDD is full
-					computer.visible_message("<span class='warning'>\The [computer] shows an \"I/O Error - Hard drive may be full. Please free some space and try again. Required space: [logfile.size]GQ\" warning.</span>")
+					computer.visible_message(SPAN_WARNING("\The [computer] shows an \"I/O Error - Hard drive may be full. Please free some space and try again. Required space: [logfile.size]GQ\" warning."))
 			return TRUE
 		if("PRG_renamechannel")
 			if(!authed)
@@ -182,7 +182,7 @@
 
 /datum/computer_file/program/chatclient/tgui_static_data(mob/user)
 	var/list/data = list()
-	data["can_admin"] = can_run(user, FALSE, ACCESS_NETWORK)
+	data["can_admin"] = has_access(user, FALSE, ACCESS_NETWORK)
 	return data
 
 /datum/computer_file/program/chatclient/tgui_data(mob/user)

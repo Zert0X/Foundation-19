@@ -1,8 +1,8 @@
 var/global/ntnet_card_uid = 1
 
 /obj/item/stock_parts/computer/network_card/
-	name = "basic NTNet network card"
-	desc = "A basic network card for usage with standard NTNet frequencies."
+	name = "basic SCiPnet network card"
+	desc = "A basic network card for usage with standard SCiPnet frequencies."
 	power_usage = 50
 	origin_tech = list(TECH_DATA = 2, TECH_ENGINEERING = 1)
 	critical = 0
@@ -13,7 +13,7 @@ var/global/ntnet_card_uid = 1
 	var/long_range = 0
 	var/ethernet = 0 // Hard-wired, therefore always on, ignores NTNet wireless checks.
 	var/proxy_id     // If set, uses the value to funnel connections through another network card.
-	malfunction_probability = 1
+	malfunction_divisor = 20
 
 /obj/item/stock_parts/computer/network_card/diagnostics()
 	. = ..()
@@ -26,7 +26,7 @@ var/global/ntnet_card_uid = 1
 	if(ethernet)
 		. += "OpenEth (Physical Connection) - Physical network connection port"
 
-/obj/item/stock_parts/computer/network_card/New(var/l)
+/obj/item/stock_parts/computer/network_card/New(l)
 	..(l)
 	identification_id = ntnet_card_uid
 	ntnet_card_uid++
@@ -62,7 +62,7 @@ var/global/ntnet_card_uid = 1
 	return ntnet_global.check_banned(identification_id)
 
 // 0 - No signal, 1 - Low signal, 2 - High signal. 3 - Wired Connection
-/obj/item/stock_parts/computer/network_card/proc/get_signal(var/specific_action = 0, list/routed_through)
+/obj/item/stock_parts/computer/network_card/proc/get_signal(specific_action = 0, list/routed_through)
 	if(!holder2) // Hardware is not installed in anything. No signal. How did this even get called?
 		return 0
 

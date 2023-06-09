@@ -40,9 +40,9 @@ SUBSYSTEM_DEF(ticker)
 
 /datum/controller/subsystem/ticker/Initialize()
 	if(start_ASAP)
-		to_world("<span class='info'><B>The game will start as soon as possible due to configuration!</B></span>")
+		to_world(SPAN_INFO("<B>The game will start as soon as possible due to configuration!</B>"))
 	else
-		to_world("<span class='info'><B>Welcome to the pre-game lobby!</B></span>")
+		to_world(SPAN_INFO("<B>Welcome to the pre-game lobby!</B>"))
 		to_world("Please, setup your character and select ready. Game will start in [round(pregame_timeleft/10)] seconds.")
 	round_start_time = world.time
 	gametime_offset = rand(0, 23) HOURS
@@ -109,12 +109,12 @@ SUBSYSTEM_DEF(ticker)
 
 	spawn(0)//Forking here so we dont have to wait for this to finish
 		mode.post_setup() // Drafts antags who don't override jobs.
-		to_world("<span class='info'><B>Enjoy the game!</B></span>")
+		to_world(SPAN_INFO("<B>Enjoy the game!</B>"))
 		sound_to(world, sound(GLOB.using_map.welcome_sound))
 
 	if(!length(GLOB.admins))
 		send2adminirc("Round has started with no admins online.")
-	
+
 	SEND_SIGNAL(src, COMSIG_TICKER_STARTED)
 
 /datum/controller/subsystem/ticker/proc/OnRoundstart(datum/callback/cb)
@@ -138,7 +138,7 @@ SUBSYSTEM_DEF(ticker)
 	else if(mode_finished && (end_game_state <= END_GAME_NOT_OVER))
 		end_game_state = END_GAME_MODE_FINISH_DONE
 		mode.cleanup()
-		log_and_message_admins(": All antagonists are deceased or the gamemode has ended.") //Outputs as "Event: All antagonists are deceased or the gamemode has ended."
+		log_and_message_staff(": All antagonists are deceased or the gamemode has ended.") //Outputs as "Event: All antagonists are deceased or the gamemode has ended."
 		SSvote.initiate_vote(/datum/vote/transfer, forced = 1)
 
 /datum/controller/subsystem/ticker/proc/post_game_tick()
@@ -154,12 +154,12 @@ SUBSYSTEM_DEF(ticker)
 				else
 					SSstatistics.set_field_details("end_proper","universe destroyed")
 				if(!delay_end)
-					to_world("<span class='notice'><b>Rebooting due to destruction of [station_name()] in [restart_timeout/10] seconds</b></span>")
+					to_world(SPAN_NOTICE("<b>Rebooting due to destruction of [station_name()] in [restart_timeout/10] seconds</b>"))
 
 			else
 				SSstatistics.set_field_details("end_proper","proper completion")
 				if(!delay_end)
-					to_world("<span class='notice'><b>Restarting in [restart_timeout/10] seconds</b></span>")
+					to_world(SPAN_NOTICE("<b>Restarting in [restart_timeout/10] seconds</b>"))
 			handle_tickets()
 		if(END_GAME_ENDING)
 			restart_timeout -= (world.time - last_fire)
@@ -225,7 +225,7 @@ Helpers
 */
 
 /datum/controller/subsystem/ticker/proc/choose_gamemode()
-	. = (revotes_allowed && !bypass_gamemode_vote) ? CHOOSE_GAMEMODE_REVOTE : CHOOSE_GAMEMODE_RESTART
+	. = (revotes_allowed && !bypass_gamemode_vote) ? CHOOSE_GAMEMODE_REVOTE : CHOOSE_GAMEMODE_RETRY
 
 	var/mode_to_try = master_mode //This is the config tag
 	var/datum/game_mode/mode_datum
@@ -288,7 +288,7 @@ Helpers
 			if(M)
 				mode_names += M.name
 		if (config.secret_hide_possibilities)
-			message_admins("<B>Possibilities:</B> [english_list(mode_names)]")
+			message_staff("<B>Possibilities:</B> [english_list(mode_names)]")
 		else
 			to_world("<B>Possibilities:</B> [english_list(mode_names)]")
 	else
@@ -346,7 +346,7 @@ Helpers
 			if(!istype(M,/mob/new_player))
 				to_chat(M, "Captainship not forced on anyone.")
 
-/datum/controller/subsystem/ticker/proc/attempt_late_antag_spawn(var/list/antag_choices)
+/datum/controller/subsystem/ticker/proc/attempt_late_antag_spawn(list/antag_choices)
 	var/datum/antagonist/antag = antag_choices[1]
 	while(antag_choices.len && antag)
 		var/needs_ghost = antag.flags & (ANTAG_OVERRIDE_JOB | ANTAG_OVERRIDE_MOB)
@@ -411,18 +411,18 @@ Helpers
 
 /datum/controller/subsystem/ticker/proc/notify_delay()
 	if(!delay_notified)
-		to_world("<span class='notice'><b>An admin has delayed the round end</b></span>")
+		to_world(SPAN_NOTICE("<b>An admin has delayed the round end</b>"))
 	delay_notified = 1
 
 /datum/controller/subsystem/ticker/proc/handle_tickets()
 	for(var/datum/ticket/ticket in tickets)
 		if(ticket.is_active())
 			if(!delay_notified)
-				message_staff("<span class='warning'><b>Automatically delaying restart due to active tickets.</b></span>")
+				message_staff(SPAN_WARNING("<b>Automatically delaying restart due to active tickets.</b>"))
 			notify_delay()
 			end_game_state = END_GAME_AWAITING_TICKETS
 			return
-	message_staff("<span class='warning'><b>No active tickets remaining, restarting in [restart_timeout/10] seconds if an admin has not delayed the round end.</b></span>")
+	message_staff(SPAN_WARNING("<b>No active tickets remaining, restarting in [restart_timeout/10] seconds if an admin has not delayed the round end.</b>"))
 	end_game_state = END_GAME_ENDING
 
 /datum/controller/subsystem/ticker/proc/declare_completion()

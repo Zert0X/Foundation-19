@@ -12,13 +12,13 @@
 	var/password
 	var/authenticated = 0
 
-/datum/computer_file/program/uplink/New(var/password)
+/datum/computer_file/program/uplink/New(password)
 	src.password = password
 
 /datum/nano_module/program/uplink
 	name = "TaxQuickly 1.45b"
 
-/datum/nano_module/program/uplink/ui_interact(var/mob/user, var/ui_key = "main", datum/nanoui/ui = null, var/force_open = 1, var/master_ui = null, var/datum/topic_state/state = GLOB.default_state)
+/datum/nano_module/program/uplink/ui_interact(mob/user, ui_key = "main", datum/nanoui/ui = null, force_open = 1, master_ui = null, datum/topic_state/state = GLOB.default_state)
 	var/datum/computer_file/program/uplink/prog = program
 	if(istype(program.computer) && program.computer.hidden_uplink && prog.password)
 		if(prog.authenticated)
@@ -31,7 +31,7 @@
 			prog.authenticated = 1
 			return
 	else
-		to_chat(user, SPAN_WARNING("ID not found"))
+		input(user, "Please enter your unique tax ID:", "Authentication")	// even if it's not a functional uplink, it still pretends to ask for your password to stop metagaming
 
 	prog.authenticated = 0
 	program.computer.kill_program(program)

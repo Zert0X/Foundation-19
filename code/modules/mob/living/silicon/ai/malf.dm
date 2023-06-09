@@ -19,7 +19,7 @@
 	to_chat(user, "Use the display-help command to view relevant information about your abilities")
 
 // Safely remove malfunction status, fixing hacked APCs and resetting variables.
-/mob/living/silicon/ai/proc/stop_malf(var/loud = 1)
+/mob/living/silicon/ai/proc/stop_malf(loud = 1)
 	if(!malfunctioning)
 		return
 	var/mob/living/silicon/ai/user = src
@@ -38,8 +38,8 @@
 	// Stop the delta alert, and, if applicable, self-destruct timer.
 	bombing_station = 0
 	var/decl/security_state/security_state = decls_repository.get_decl(GLOB.using_map.security_state)
-	if(security_state.current_security_level == security_state.severe_security_level)
-		security_state.decrease_security_level(TRUE)
+	if(security_state.current_security_level == security_state.destruction_security_level)
+		security_state.set_security_level(security_state.stored_security_level, TRUE)
 	// Reset our verbs
 	remove_verb(src, verbs)
 	add_ai_verbs()
@@ -55,7 +55,7 @@
 		if(!errored)
 			errored = 1
 			error("malf_process() called on AI without research datum. Report this.")
-			message_admins("ERROR: malf_process() called on AI without research datum. If admin modified one of the AI's vars revert the change and don't modify variables directly, instead use ProcCall or admin panels.")
+			message_staff("ERROR: malf_process() called on AI without research datum. If admin modified one of the AI's vars revert the change and don't modify variables directly, instead use ProcCall or admin panels.")
 			spawn(1200)
 				errored = 0
 		return
@@ -68,14 +68,14 @@
 // Recalculates CPU time gain and storage capacities.
 /mob/living/silicon/ai/proc/recalc_cpu()
 	// AI Starts with these values.
-	var/cpu_gain = 0.01
-	var/cpu_storage = 10
+	var/cpu_gain = 0.2 //Apparently this is x10'd
+	var/cpu_storage = 60
 
 	// Off-Station APCs should not count towards CPU generation.
 	for(var/obj/machinery/power/apc/A in hacked_apcs)
 		if(A.z in GLOB.using_map.station_levels)
-			cpu_gain += 0.004 * (hacked_apcs_hidden ? 0.5 : 1)
-			cpu_storage += 10
+			cpu_gain += 0.08 * (hacked_apcs_hidden ? 0.5 : 1)
+			cpu_storage += 40
 
 	research.max_cpu = cpu_storage + override_CPUStorage
 	if(hardware && istype(hardware, /datum/malf_hardware/dual_ram))
@@ -87,14 +87,14 @@
 		research.cpu_increase_per_tick = research.cpu_increase_per_tick * 2
 
 // Starts AI's APU generator
-/mob/living/silicon/ai/proc/start_apu(var/shutup = 0)
+/mob/living/silicon/ai/proc/start_apu(shutup = 0)
 	if(!hardware || !istype(hardware, /datum/malf_hardware/apu_gen))
 		if(!shutup)
 			to_chat(src, "You do not have an APU generator and you shouldn't have this verb. Report this.")
 		return
 	if(hardware_integrity() < 50)
 		if(!shutup)
-			to_chat(src, "<span class='notice'>Starting APU... <b>FAULT</b>(System Damaged)</span>")
+			to_chat(src, SPAN_NOTICE("Starting APU... <b>FAULT</b>(System Damaged)"))
 		return
 	if(!shutup)
 		to_chat(src, "Starting APU... ONLINE")
@@ -102,7 +102,7 @@
 	APU_power = 1
 
 // Stops AI's APU generator
-/mob/living/silicon/ai/proc/stop_apu(var/shutup = 0)
+/mob/living/silicon/ai/proc/stop_apu(shutup = 0)
 	if(!hardware || !istype(hardware, /datum/malf_hardware/apu_gen))
 		return
 

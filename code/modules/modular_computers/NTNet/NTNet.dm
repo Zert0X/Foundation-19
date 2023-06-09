@@ -7,6 +7,7 @@ var/global/datum/ntnet/ntnet_global = new()
 	var/list/logs = list()
 	var/list/available_station_software = list()
 	var/list/available_antag_software = list()
+	var/list/available_virus_software = list()
 	var/list/available_news = list()
 	var/list/chat_channels = list()
 	var/list/fileservers = list()
@@ -51,12 +52,12 @@ var/global/datum/ntnet/ntnet_global = new()
 	build_reports_list()
 	add_log("NTNet logging system activated.")
 
-/datum/ntnet/proc/add_log_with_ids_check(var/log_string, var/obj/item/stock_parts/computer/network_card/source = null)
+/datum/ntnet/proc/add_log_with_ids_check(log_string, obj/item/stock_parts/computer/network_card/source = null)
 	if(intrusion_detection_enabled)
 		add_log(log_string, source)
 
 // Simplified logging: Adds a log. log_string is mandatory parameter, source is optional.
-/datum/ntnet/proc/add_log(var/log_string, var/obj/item/stock_parts/computer/network_card/source = null)
+/datum/ntnet/proc/add_log(log_string, obj/item/stock_parts/computer/network_card/source = null)
 	var/log_text = "[station_time_timestamp()] - "
 	if(source)
 		log_text += "[source.get_network_tag()] - "
@@ -90,7 +91,7 @@ var/global/datum/ntnet/ntnet_global = new()
 	return FALSE
 
 // Checks whether NTNet operates. If parameter is passed checks whether specific function is enabled.
-/datum/ntnet/proc/check_function(var/specific_action = 0)
+/datum/ntnet/proc/check_function(specific_action = 0)
 	if(!relays || !relays.len) // No relays found. NTNet is down
 		return 0
 
@@ -119,6 +120,7 @@ var/global/datum/ntnet/ntnet_global = new()
 /datum/ntnet/proc/build_software_lists()
 	available_station_software = list()
 	available_antag_software = list()
+	available_virus_software = list()
 	for(var/F in typesof(/datum/computer_file/program))
 		var/datum/computer_file/program/prog = new F
 		// Invalid type (shouldn't be possible but just in case), invalid filetype (not executable program) or invalid filename (unset program)
@@ -129,6 +131,8 @@ var/global/datum/ntnet/ntnet_global = new()
 			available_station_software.Add(prog)
 		if(prog.available_on_syndinet)
 			available_antag_software.Add(prog)
+		if(prog.program_malicious)
+			available_virus_software.Add(prog)
 
 // Generates service email list. Currently only used by broadcaster service
 /datum/ntnet/proc/build_emails_list()
@@ -136,11 +140,14 @@ var/global/datum/ntnet/ntnet_global = new()
 		new F()
 
 // Attempts to find a downloadable file according to filename var
-/datum/ntnet/proc/find_ntnet_file_by_name(var/filename)
+/datum/ntnet/proc/find_ntnet_file_by_name(filename)
 	for(var/datum/computer_file/program/P in available_station_software)
 		if(filename == P.filename)
 			return P
 	for(var/datum/computer_file/program/P in available_antag_software)
+		if(filename == P.filename)
+			return P
+	for(var/datum/computer_file/program/P in available_virus_software)
 		if(filename == P.filename)
 			return P
 
@@ -160,7 +167,7 @@ var/global/datum/ntnet/ntnet_global = new()
 	add_log("-!- LOGS DELETED BY SYSTEM OPERATOR -!-")
 
 // Updates maximal amount of stored logs. Use this instead of setting the number, it performs required checks.
-/datum/ntnet/proc/update_max_log_count(var/lognumber)
+/datum/ntnet/proc/update_max_log_count(lognumber)
 	if(!lognumber)
 		return 0
 	// Trim the value if necessary
@@ -168,7 +175,7 @@ var/global/datum/ntnet/ntnet_global = new()
 	setting_maxlogcount = lognumber
 	add_log("Configuration Updated. Now keeping [setting_maxlogcount] logs in system memory.")
 
-/datum/ntnet/proc/toggle_function(var/function)
+/datum/ntnet/proc/toggle_function(function)
 	if(!function)
 		return
 	function = text2num(function)
@@ -186,7 +193,7 @@ var/global/datum/ntnet/ntnet_global = new()
 			setting_systemcontrol = !setting_systemcontrol
 			add_log("Configuration Updated. Wireless network firewall now [setting_systemcontrol ? "allows" : "disallows"] remote control of station's systems.")
 
-/datum/ntnet/proc/does_email_exist(var/login)
+/datum/ntnet/proc/does_email_exist(login)
 	for(var/datum/computer_file/data/email_account/A in ntnet_global.email_accounts)
 		if(A.login == login)
 			return 1

@@ -43,7 +43,7 @@
 			playsound(src, 'sound/machines/boop1.ogg', 30)
 			return
 
-/mob/living/bot/cleanbot/confirmTarget(var/obj/effect/decal/cleanable/D)
+/mob/living/bot/cleanbot/confirmTarget(obj/effect/decal/cleanable/D)
 	if(!..())
 		return 0
 	for(var/T in target_types)
@@ -55,7 +55,7 @@
 	if(get_turf(target) == src.loc)
 		UnarmedAttack(target)
 
-/mob/living/bot/cleanbot/UnarmedAttack(var/obj/effect/decal/cleanable/D, var/proximity)
+/mob/living/bot/cleanbot/UnarmedAttack(obj/effect/decal/cleanable/D, proximity)
 	if(!..())
 		return
 
@@ -84,7 +84,7 @@
 
 /mob/living/bot/cleanbot/explode()
 	on = 0
-	visible_message("<span class='danger'>[src] blows apart!</span>")
+	visible_message(SPAN_DANGER("[src] blows apart!"))
 	var/turf/Tsec = get_turf(src)
 
 	new /obj/item/reagent_containers/glass/bucket(Tsec)
@@ -116,7 +116,7 @@
 	. = "Odd looking screw twiddled: <a href='?src=\ref[src];command=screw'>[screwloose ? "Yes" : "No"]</a>"
 	. += "<br>Weird button pressed: <a href='?src=\ref[src];command=oddbutton'>[oddbutton ? "Yes" : "No"]</a>"
 
-/mob/living/bot/cleanbot/ProcessCommand(var/mob/user, var/command, var/href_list)
+/mob/living/bot/cleanbot/ProcessCommand(mob/user, command, href_list)
 	..()
 	if(CanAccessPanel(user))
 		switch(command)
@@ -134,11 +134,11 @@
 			if("oddbutton")
 				oddbutton = !oddbutton
 
-/mob/living/bot/cleanbot/emag_act(var/remaining_uses, var/mob/user)
+/mob/living/bot/cleanbot/emag_act(remaining_uses, mob/user)
 	. = ..()
 	if(!screwloose || !oddbutton)
 		if(user)
-			to_chat(user, "<span class='notice'>The [src] buzzes and beeps.</span>")
+			to_chat(user, SPAN_NOTICE("The [src] buzzes and beeps."))
 		oddbutton = 1
 		screwloose = 1
 		return 1

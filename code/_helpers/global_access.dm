@@ -333,8 +333,6 @@
 			return global.cameranet;
 		if("can_call_ert")
 			return global.can_call_ert;
-		if("captain_announcement")
-			return global.captain_announcement;
 		if("changelog_hash")
 			return global.changelog_hash;
 		if("channel_color_presets")
@@ -419,10 +417,6 @@
 			return global.escape_pods_by_name;
 		if("evacuation_controller")
 			return global.evacuation_controller;
-		if("event_last_fired")
-			return global.event_last_fired;
-		if("eventchance")
-			return global.eventchance;
 		if("explosion_in_progress")
 			return global.explosion_in_progress;
 		if("explosion_turfs")
@@ -489,8 +483,6 @@
 			return global.gravity_is_on;
 		if("gzn_check")
 			return global.gzn_check;
-		if("hadevent")
-			return global.hadevent;
 		if("holder_mob_icon_cache")
 			return global.holder_mob_icon_cache;
 		if("href_logfile")
@@ -571,24 +563,6 @@
 			return global.message_delay;
 		if("message_servers")
 			return global.message_servers;
-		if("meteors_armageddon")
-			return global.meteors_armageddon;
-		if("meteors_cataclysm")
-			return global.meteors_cataclysm;
-		if("meteors_catastrophic")
-			return global.meteors_catastrophic;
-		if("meteors_dust")
-			return global.meteors_dust;
-		if("meteors_major")
-			return global.meteors_major;
-		if("meteors_minor")
-			return global.meteors_minor;
-		if("meteors_moderate")
-			return global.meteors_moderate;
-		if("meteors_normal")
-			return global.meteors_normal;
-		if("meteors_threatening")
-			return global.meteors_threatening;
 		if("mil_branches")
 			return global.mil_branches;
 		if("mimic_defines")
@@ -1222,8 +1196,6 @@
 			global.cameranet=newval;
 		if("can_call_ert")
 			global.can_call_ert=newval;
-		if("captain_announcement")
-			global.captain_announcement=newval;
 		if("changelog_hash")
 			global.changelog_hash=newval;
 		if("channel_color_presets")
@@ -1308,10 +1280,6 @@
 			global.escape_pods_by_name=newval;
 		if("evacuation_controller")
 			global.evacuation_controller=newval;
-		if("event_last_fired")
-			global.event_last_fired=newval;
-		if("eventchance")
-			global.eventchance=newval;
 		if("explosion_in_progress")
 			global.explosion_in_progress=newval;
 		if("explosion_turfs")
@@ -1378,8 +1346,6 @@
 			global.gravity_is_on=newval;
 		if("gzn_check")
 			global.gzn_check=newval;
-		if("hadevent")
-			global.hadevent=newval;
 		if("holder_mob_icon_cache")
 			global.holder_mob_icon_cache=newval;
 		if("href_logfile")
@@ -1460,24 +1426,6 @@
 			global.message_delay=newval;
 		if("message_servers")
 			global.message_servers=newval;
-		if("meteors_armageddon")
-			global.meteors_armageddon=newval;
-		if("meteors_cataclysm")
-			global.meteors_cataclysm=newval;
-		if("meteors_catastrophic")
-			global.meteors_catastrophic=newval;
-		if("meteors_dust")
-			global.meteors_dust=newval;
-		if("meteors_major")
-			global.meteors_major=newval;
-		if("meteors_minor")
-			global.meteors_minor=newval;
-		if("meteors_moderate")
-			global.meteors_moderate=newval;
-		if("meteors_normal")
-			global.meteors_normal=newval;
-		if("meteors_threatening")
-			global.meteors_threatening=newval;
 		if("mil_branches")
 			global.mil_branches=newval;
 		if("mimic_defines")
@@ -1944,7 +1892,6 @@
 	"camera_repository",
 	"cameranet",
 	"can_call_ert",
-	"captain_announcement",
 	"changelog_hash",
 	"channel_color_presets",
 	"channel_to_radio_key",
@@ -1987,8 +1934,6 @@
 	"escape_pods",
 	"escape_pods_by_name",
 	"evacuation_controller",
-	"event_last_fired",
-	"eventchance",
 	"explosion_in_progress",
 	"explosion_turfs",
 	"failed_db_connections",
@@ -2022,7 +1967,6 @@
 	"global_vars_",
 	"gravity_is_on",
 	"gzn_check",
-	"hadevent",
 	"holder_mob_icon_cache",
 	"href_logfile",
 	"human_icon_cache",

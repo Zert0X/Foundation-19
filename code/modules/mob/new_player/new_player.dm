@@ -73,7 +73,7 @@
 
 		if(client.prefs.organ_data[BP_CHEST] == "cyborg")
 			if(!whitelist_lookup(SPECIES_FBP, client.ckey) && client.prefs.species != SPECIES_IPC)
-				to_chat(usr, "No FBP without whitelist")
+				tgui_alert(client, "You are currently not whitelisted to play as FBP.", null, list("Ok"))
 				return FALSE
 
 		var/should_warn = TRUE
@@ -105,10 +105,10 @@
 	if(src != usr)
 		return FALSE
 	if(GAME_STATE != RUNLEVEL_GAME)
-		to_chat(usr, "<span class='warning'>The round is either not ready, or has already finished...</span>")
+		to_chat(usr, SPAN_WARNING("The round is either not ready, or has already finished..."))
 		return FALSE
 	if(!config.enter_allowed)
-		to_chat(usr, "<span class='notice'>There is an administrative lock on entering the game!</span>")
+		to_chat(usr, SPAN_NOTICE("There is an administrative lock on entering the game!"))
 		return FALSE
 
 	if(!job || !job.is_available(client))
@@ -172,7 +172,7 @@
 			AnnounceArrival(character, job, spawnpoint.msg)
 		else
 			AnnounceCyborg(character, job, spawnpoint.msg)
-	log_and_message_admins("has joined the round as [character.mind.assigned_role].", character)
+	log_and_message_staff("has joined the round as [character.mind.assigned_role][character.mind.role_alt_title == character.mind.assigned_role ? "" : " ([character.mind.role_alt_title])"].", character)
 
 	if(character.needs_wheelchair())
 		equip_wheelchair(character)
@@ -261,7 +261,7 @@
 	spawning = TRUE
 	if(client.prefs.organ_data[BP_CHEST] == "cyborg")
 		if(!whitelist_lookup(SPECIES_FBP, client.ckey) && client.prefs.species != SPECIES_IPC)
-			to_chat(src, "No FBP without whitelist.")
+			tgui_alert(client, "You are currently not whitelisted to play as FBP.", null, list("Ok"))
 			spawning = FALSE
 			return
 	close_spawn_windows()

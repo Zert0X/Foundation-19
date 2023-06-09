@@ -20,14 +20,14 @@
 	..()
 	update_icon()
 
-/obj/item/device/oxycandle/afterattack(var/obj/O, var/mob/user, var/proximity)
+/obj/item/device/oxycandle/afterattack(obj/O, mob/user, proximity)
 	if(proximity && istype(O) && on)
 		O.HandleObjectHeating(src, user, 500)
 	..()
 
 /obj/item/device/oxycandle/attack_self(mob/user)
 	if(!on)
-		to_chat(user, "<span class='notice'>You pull the cord and [src] ignites.</span>")
+		to_chat(user, SPAN_NOTICE("You pull the cord and [src] ignites."))
 		on = 1
 		update_icon()
 		playsound(src.loc, activation_sound, 75, 1)

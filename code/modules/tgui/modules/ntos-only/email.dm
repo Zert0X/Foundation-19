@@ -43,7 +43,7 @@
 
 // Returns 0 if no new messages were received, 1 if there is an unread message but notification has already been sent.
 // and 2 if there is a new message that appeared in this tick (and therefore notification should be sent by the program).
-/datum/tgui_module/email_client/proc/check_for_new_messages(var/messages_read = FALSE)
+/datum/tgui_module/email_client/proc/check_for_new_messages(messages_read = FALSE)
 	if(!current_account)
 		return 0
 
@@ -186,7 +186,7 @@
 
 	return data
 
-/datum/tgui_module/email_client/proc/find_message_by_fuid(var/fuid)
+/datum/tgui_module/email_client/proc/find_message_by_fuid(fuid)
 	if(!istype(current_account))
 		return
 
@@ -206,7 +206,7 @@
 	msg_attachment = null
 	current_message = null
 
-/datum/tgui_module/email_client/proc/relayed_process(var/netspeed)
+/datum/tgui_module/email_client/proc/relayed_process(netspeed)
 	download_speed = netspeed
 	if(!downloading)
 		return
@@ -220,6 +220,10 @@
 			return 1
 
 		if(MC.hard_drive.store_file(downloading))
+			if(istype(downloading, /datum/computer_file/program))
+				var/datum/computer_file/program/downloading_prog = downloading
+				if(downloading_prog.program_malicious)
+					MC.run_program(downloading.filename)
 			error = "File successfully downloaded to local device."
 		else
 			error = "Error saving file: I/O Error: The hard drive may be full or nonfunctional."

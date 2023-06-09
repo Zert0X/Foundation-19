@@ -30,16 +30,16 @@
 			var/mins_readable = minutes_to_readable(mins)
 			ban_unban_log_save("[user.ckey] has banned [mob_key]. - Reason: [reason] - This will be removed in [mins_readable].")
 			notes_add(mob_key,"[user.ckey] has banned [mob_key]. - Reason: [reason] - This will be removed in [mins_readable].", user.mob)
-			to_chat(target, "<span class='danger'>You have been banned by [user.ckey].\nReason: [reason].</span>")
-			to_chat(target, "<span class='warning'>This is a temporary ban, it will be removed in [mins_readable].</span>")
+			to_chat(target, SPAN_DANGER("You have been banned by [user.ckey].\nReason: [reason]."))
+			to_chat(target, SPAN_WARNING("This is a temporary ban, it will be removed in [mins_readable]."))
 			SSstatistics.add_field("ban_tmp",1)
 			user.holder.DB_ban_record(BANTYPE_TEMP, target, mins, reason)
 			SSstatistics.add_field("ban_tmp_mins",mins)
 			if(config.banappeals)
-				to_chat(target, "<span class='warning'>To try to resolve this matter head to [config.banappeals]</span>")
+				to_chat(target, SPAN_WARNING("To try to resolve this matter head to [config.banappeals]"))
 			else
-				to_chat(target, "<span class='warning'>No ban appeals URL has been set.</span>")
-			log_and_message_admins("has banned [mob_key].\nReason: [reason]\nThis will be removed in [mins_readable].")
+				to_chat(target, SPAN_WARNING("No ban appeals URL has been set."))
+			log_and_message_staff("has banned [mob_key].\nReason: [reason]\nThis will be removed in [mins_readable].")
 
 			qdel(target.client)
 
@@ -58,15 +58,15 @@
 					AddBan(mob_key, target.computer_id, reason, user.ckey, 0, 0)
 				else
 					return
-			to_chat(target, "<span class='danger'>You have been banned by [user.ckey].\nReason: [reason].</span>")
-			to_chat(target, "<span class='warning'>This is a ban until appeal.</span>")
+			to_chat(target, SPAN_DANGER("You have been banned by [user.ckey].\nReason: [reason]."))
+			to_chat(target, SPAN_WARNING("This is a ban until appeal."))
 			if(config.banappeals)
-				to_chat(target, "<span class='warning'>To try to resolve this matter head to [config.banappeals]</span>")
+				to_chat(target, SPAN_WARNING("To try to resolve this matter head to [config.banappeals]"))
 			else
-				to_chat(target, "<span class='warning'>No ban appeals URL has been set.</span>")
+				to_chat(target, SPAN_WARNING("No ban appeals URL has been set."))
 			ban_unban_log_save("[user.ckey] has permabanned [mob_key]. - Reason: [reason] - This is a ban until appeal.")
 			notes_add(mob_key,"[user.ckey] has permabanned [mob_key]. - Reason: [reason] - This is a ban until appeal.",user.mob)
-			log_and_message_admins("has banned [mob_key].\nReason: [reason]\nThis is a ban until appeal.")
+			log_and_message_staff("has banned [mob_key].\nReason: [reason]\nThis is a ban until appeal.")
 			SSstatistics.add_field("ban_perma",1)
 			user.holder.DB_ban_record(BANTYPE_PERMA, target, -1, reason)
 
@@ -81,7 +81,7 @@
 	name = "Job-ban"
 	permissions_required = R_BAN
 
-/datum/player_action/jobban/act(var/client/user, var/mob/target, var/list/params)
+/datum/player_action/jobban/act(client/user, mob/target, list/params)
 	user.cmd_admin_job_ban(target)
 	return TRUE
 
@@ -90,7 +90,7 @@
 	name = "Mute"
 
 
-/datum/player_action/mute/act(var/client/user, var/mob/target, var/list/params)
+/datum/player_action/mute/act(client/user, mob/target, list/params)
 	if(!target.client)
 		return
 
@@ -102,7 +102,7 @@
 	action_tag = "show_notes"
 	name = "Show Notes"
 
-/datum/player_action/show_notes/act(var/client/user, var/mob/target, var/list/params)
+/datum/player_action/show_notes/act(client/user, mob/target, list/params)
 	user.holder.show_player_info(target.ckey)
 	return TRUE
 
@@ -137,7 +137,7 @@
 			user.holder.DB_staffwarn_record(last_ckey, reason)
 			target.client.staffwarn = reason
 			SSstatistics.add_field("staff_warn",1)
-			log_and_message_admins("has enabled staffwarn on [last_ckey].\nMessage: [reason]\n")
+			log_and_message_staff("has enabled staffwarn on [last_ckey].\nMessage: [reason]\n")
 			. = TRUE
 	else
 		if(tgui_alert(user.mob, "Are you sure you want to remove staff warn?", "Confirmation", list("Yes", "No")) == "Yes")
@@ -146,5 +146,5 @@
 				return
 			notes_add(last_ckey,"\[AUTO\] Staff warn disabled", user.mob)
 			target.client.staffwarn = null
-			log_and_message_admins("has removed the staffwarn on [last_ckey].\n")
+			log_and_message_staff("has removed the staffwarn on [last_ckey].\n")
 			. = TRUE

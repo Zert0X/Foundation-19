@@ -15,7 +15,7 @@
 	var/is_centcom = 0
 	var/show_assignments = 0
 
-/datum/nano_module/program/card_mod/ui_interact(mob/user, ui_key = "main", var/datum/nanoui/ui = null, var/force_open = 1, var/datum/topic_state/state = GLOB.default_state)
+/datum/nano_module/program/card_mod/ui_interact(mob/user, ui_key = "main", datum/nanoui/ui = null, force_open = 1, datum/topic_state/state = GLOB.default_state)
 	var/list/data = host.initial_data()
 	var/obj/item/stock_parts/computer/card_slot/card_slot = program.computer.card_slot
 
@@ -25,7 +25,7 @@
 	data["assignments"] = show_assignments
 	data["have_id_slot"] = !!card_slot
 	data["have_printer"] = program.computer.nano_printer
-	data["authenticated"] = program.can_run(user)
+	data["authenticated"] = program.has_access(user)
 	if(!data["have_id_slot"] || !data["have_printer"])
 		mod_mode = 0 //We can't modify IDs when there is no card reader
 	if(card_slot)
@@ -99,7 +99,7 @@
 
 	return formatted
 
-/datum/nano_module/program/card_mod/proc/get_accesses(var/is_centcom = 0)
+/datum/nano_module/program/card_mod/proc/get_accesses(is_centcom = 0)
 	return null
 
 
@@ -128,11 +128,11 @@
 				module.show_assignments = 1
 		if("print")
 			if(!authorized(user_id_card))
-				to_chat(usr, "<span class='warning'>Access denied.</span>")
+				to_chat(usr, SPAN_WARNING("Access denied."))
 				return
 			if(computer.nano_printer) //This option should never be called if there is no printer
 				if(module.mod_mode)
-					if(can_run(user, 1))
+					if(has_access(user, 1))
 						var/contents = {"<h4>Access Report</h4>
 									<u>Prepared By:</u> [user_id_card.registered_name ? user_id_card.registered_name : "Unknown"]<br>
 									<u>For:</u> [id_card.registered_name ? id_card.registered_name : "Unregistered"]<br>
@@ -151,7 +151,7 @@
 								contents += "  [get_access_desc(A)]"
 
 						if(!computer.nano_printer.print_text(contents,"access report"))
-							to_chat(usr, "<span class='notice'>Hardware error: Printer was unable to print the file. It may be out of paper.</span>")
+							to_chat(usr, SPAN_NOTICE("Hardware error: Printer was unable to print the file. It may be out of paper."))
 							return
 				else
 					var/contents = {"<h4>Crew Manifest</h4>
@@ -159,7 +159,7 @@
 									[html_crew_manifest()]
 									"}
 					if(!computer.nano_printer.print_text(contents, "crew manifest ([station_time_timestamp("hh:mm")])"))
-						to_chat(usr, "<span class='notice'>Hardware error: Printer was unable to print the file. It may be out of paper.</span>")
+						to_chat(usr, SPAN_NOTICE("Hardware error: Printer was unable to print the file. It may be out of paper."))
 						return
 		if("eject")
 			if(computer.card_slot?.stored_card)
@@ -168,17 +168,17 @@
 				computer.card_slot?.insert_id(user.get_active_hand(), user)
 		if("terminate")
 			if(!authorized(user_id_card))
-				to_chat(usr, "<span class='warning'>Access denied.</span>")
+				to_chat(usr, SPAN_WARNING("Access denied."))
 				return
-			if(computer && can_run(user, 1))
+			if(computer && has_access(user, 1))
 				id_card.assignment = "Terminated"
 				remove_nt_access(id_card)
 				callHook("terminate_employee", list(id_card))
 		if("edit")
 			if(!authorized(user_id_card))
-				to_chat(usr, "<span class='warning'>Access denied.</span>")
+				to_chat(usr, SPAN_WARNING("Access denied."))
 				return
-			if(computer && can_run(user, 1))
+			if(computer && has_access(user, 1))
 				if(href_list["name"])
 					var/temp_name = sanitizeName(input("Enter name.", "Name", id_card.registered_name),allow_numbers=TRUE)
 					if(temp_name)
@@ -198,9 +198,9 @@
 					id_card.associated_email_login["password"] = email_password
 		if("assign")
 			if(!authorized(user_id_card))
-				to_chat(usr, "<span class='warning'>Access denied.</span>")
+				to_chat(usr, SPAN_WARNING("Access denied."))
 				return
-			if(computer && can_run(user, 1) && id_card)
+			if(computer && has_access(user, 1) && id_card)
 				var/t1 = href_list["assign_target"]
 				if(t1 == "Custom")
 					var/temp_t = sanitize(input("Enter a custom job assignment.","Assignment", id_card.assignment), 45)
@@ -214,12 +214,13 @@
 					else
 						var/datum/job/jobdatum = SSjobs.get_by_title(t1)
 						if(!jobdatum)
-							to_chat(usr, "<span class='warning'>No log exists for this job: [t1]</span>")
+							to_chat(usr, SPAN_WARNING("No log exists for this job: [t1]"))
 							return
 
 						var/list/to_give = jobdatum.get_access()
+						var/list/operating_types = get_access_ids(operating_access_types)
 						for(var/acc in to_give)
-							if(acc && operating_access_types)
+							if(acc in operating_types)
 								access.Add(acc)
 
 					remove_nt_access(id_card)
@@ -229,10 +230,10 @@
 
 				callHook("reassign_employee", list(id_card))
 		if("access")
-			if(href_list["allowed"] && computer && can_run(user, 1) && id_card)
+			if(href_list["allowed"] && computer && has_access(user, 1) && id_card)
 				var/access_type = href_list["access_target"]
 				var/access_allowed = text2num(href_list["allowed"])
-				if(access_type in get_access_ids(ACCESS_TYPE_STATION|ACCESS_TYPE_CENTCOM))
+				if(access_type in get_access_ids(operating_access_types))
 					for(var/access in user_id_card.access)
 						var/region_type = get_access_region_by_id(access_type)
 						if(access in GLOB.using_map.access_modify_region[region_type])
@@ -246,11 +247,11 @@
 	SSnano.update_uis(NM)
 	return 1
 
-/datum/computer_file/program/card_mod/proc/remove_nt_access(var/obj/item/card/id/id_card)
+/datum/computer_file/program/card_mod/proc/remove_nt_access(obj/item/card/id/id_card)
 	id_card.access -= get_access_ids(ACCESS_TYPE_STATION|ACCESS_TYPE_CENTCOM)
 
-/datum/computer_file/program/card_mod/proc/apply_access(var/obj/item/card/id/id_card, var/list/accesses)
+/datum/computer_file/program/card_mod/proc/apply_access(obj/item/card/id/id_card, list/accesses)
 	id_card.access |= accesses
 
-/datum/computer_file/program/card_mod/proc/authorized(var/obj/item/card/id/id_card)
+/datum/computer_file/program/card_mod/proc/authorized(obj/item/card/id/id_card)
 	return id_card && (ACCESS_CHANGE_IDS in id_card.access)

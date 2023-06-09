@@ -38,7 +38,7 @@
 /datum/computer_file/program/scanner/proc/save_scan(name)
 	if(!data_buffer)
 		return 0
-	if(!create_file(name, data_buffer, scan_file_type, metadata_buffer.Copy()))
+	if(!create_data_file(name, data_buffer, scan_file_type, metadata_buffer.Copy()))
 		return 0
 	return 1
 
@@ -88,7 +88,7 @@
 /datum/nano_module/program/scanner
 	name = "Scanner"
 
-/datum/nano_module/program/scanner/ui_interact(mob/user, ui_key = "main", var/datum/nanoui/ui = null, var/force_open = 1, var/datum/topic_state/state = GLOB.default_state)
+/datum/nano_module/program/scanner/ui_interact(mob/user, ui_key = "main", datum/nanoui/ui = null, force_open = 1, datum/topic_state/state = GLOB.default_state)
 	var/list/data = host.initial_data()
 	var/datum/computer_file/program/scanner/prog = program
 	if(!prog.computer)

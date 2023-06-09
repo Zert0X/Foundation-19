@@ -10,6 +10,9 @@ SUBSYSTEM_DEF(input)
 
 /datum/controller/subsystem/input/Initialize()
 	setup_default_macro_sets()
+
+	initialized = TRUE
+
 	refresh_client_macro_sets()
 	return ..()
 
@@ -25,7 +28,8 @@ SUBSYSTEM_DEF(input)
 
 // Badmins just wanna have fun d
 /datum/controller/subsystem/input/proc/refresh_client_macro_sets()
-	for(var/client/C in GLOB.clients)
+	var/list/clients_list = GLOB.clients
+	for(var/client/C in clients_list)
 		C.set_macros()
 
 /datum/controller/subsystem/input/fire()
